@@ -27,8 +27,8 @@ public class Enemy : MonoBehaviour
     public bool isHealing = false;
 
     private float waitTime;
-
     private Vector2 direction;
+    private Vector3 startPos;
 
     private float TimeSinceLastShot;
     private float TimeSinceReload;
@@ -51,17 +51,24 @@ public class Enemy : MonoBehaviour
     void Update()
     {
         if(Vector2.Distance(transform.position, patrol.moveSpots[randSpot].position) < 0.2f){
-            randSpot = Random.Range(0, patrol.moveSpots.Count); 
+            randSpot = Random.Range(0, patrol.moveSpots.Count);
             waitTime = patrol.startWaitTime;
+            if(waitTime < 0)
+                startPos = transform.position; 
+            TimeSinceLastShot -= Time.deltaTime;
         }
         else
             TimeSinceLastShot -= Time.deltaTime;
         float dirAngle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
-        transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.AngleAxis(dirAngle, Vector3.forward),10000*Time.deltaTime);  
-        direction = patrol.moveSpots[randSpot].position - transform.position;      
+        transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.AngleAxis(dirAngle, Vector3.forward),10000*Time.deltaTime); 
+        if(Vector2.Distance(transform.position, patrol.moveSpots[randSpot].position) < 0.2f){
+            direction = (startPos - patrol.moveSpots[randSpot].position) * -1;
+        }
+        else
+            direction = patrol.moveSpots[randSpot].position - transform.position;      
         Vector2 playerDirection = playerpos.position - transform.position;
         float angle = Vector2.Angle(playerDirection, direction);
-        if(direction.x < 5 && direction.y < 5){
+        if(playerDirection.x < 5 && playerDirection.y < 5){
             if(angle < fov/2 && angle != 0)
             {
                 transform.position = Vector2.MoveTowards(transform.position, playerpos.position, speed * Time.deltaTime);
