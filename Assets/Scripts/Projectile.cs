@@ -29,15 +29,7 @@ public class Projectile : MonoBehaviour
     {
         TimeAlive += Time.deltaTime;
         transform.position = Vector2.MoveTowards(transform.position, target, speed * Time.deltaTime);
-        if (Vector2.Distance(transform.position, target) < 0.2f)
+        if (Vector2.Distance(transform.position, target) < 1f)
             Destroy(gameObject);
-    }
-
-    void OnTriggerEnter2D(Collider2D other) {
-        if (other.CompareTag("Player"))
-        {
-            player.health--;
-            Destroy(gameObject);
-        }
     }
 }

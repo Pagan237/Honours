@@ -5,14 +5,14 @@ using UnityEngine;
 public class Enemy : MonoBehaviour
 {
     
-    public float fov = 70f;
-    public bool inSight = false;
-    public Vector2 PLS;
+    public float fov = 70f; // field of view
+    public bool inSight = false; //is player visible
+    public Vector2 PLS; //Position player was last seen
     public int ammo;
-    public bool reloading;
+    public bool reloading; 
     public Patrol patrol;
     public float speed;
-    private Transform playerpos;
+    private Transform playerpos; //Position of player
 
     private EnemyShooting ES;
 
@@ -24,11 +24,11 @@ public class Enemy : MonoBehaviour
     private float TimeAlive;
 
     private float TimeSpentHealing = 0;
-    public bool isHealing = false;
+    public bool isHealing = false; //is AI healing
 
-    private float waitTime;
-    private Vector2 direction;
-    private Vector3 startPos;
+    private float waitTime; //Time to wait until next patrol spot to be generated
+    private Vector2 direction; //Direction AI is facing
+    private Vector3 startPos; //Position of AI when beginning to travel to new spot
 
     private float TimeSinceLastShot;
     private float TimeSinceReload;
@@ -59,29 +59,39 @@ public class Enemy : MonoBehaviour
         }
         else
             TimeSinceLastShot -= Time.deltaTime;
+        //Calculate angle AI needs to rotate to face new Position
         float dirAngle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+        //Rotate to face that position
         transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.AngleAxis(dirAngle, Vector3.forward),10000*Time.deltaTime); 
         if(Vector2.Distance(transform.position, patrol.moveSpots[randSpot].position) < 0.2f){
+            //If at new position, face of original position from new position
             direction = (startPos - patrol.moveSpots[randSpot].position) * -1;
         }
         else
-            direction = patrol.moveSpots[randSpot].position - transform.position;      
+            //face position travelling to
+            direction = patrol.moveSpots[randSpot].position - transform.position;
+        //Direction of player from AI      
         Vector2 playerDirection = playerpos.position - transform.position;
+        //Angle between direction of player and direction AI is travelling
         float angle = Vector2.Angle(playerDirection, direction);
         if(playerDirection.x < 5 && playerDirection.y < 5){
             if(angle < fov/2 && angle != 0)
             {
+                //If angle is less than field of view and player isn't too far away
                 transform.position = Vector2.MoveTowards(transform.position, playerpos.position, speed * Time.deltaTime);
                 if(TimeSinceLastShot < 0 && !reloading){
+                    //If AI isn't reloading, shoot at player
                     Instantiate(ES.shot, ES.AIpos.position, Quaternion.identity);
                     TimeSinceLastShot = ES.StartTimeBetweenShots;
                     ammo--;
                 }
             }
             else
+                //if player is within range but outside of field of view, move to designated position
                 transform.position = Vector2.MoveTowards(transform.position, patrol.moveSpots[randSpot].position, speed * Time.deltaTime);
         }
         else
+            //if player is too far away move to designated position
             transform.position = Vector2.MoveTowards(transform.position, patrol.moveSpots[randSpot].position, speed * Time.deltaTime);
         if(ammo == 0){
             reload();
@@ -103,25 +113,6 @@ public class Enemy : MonoBehaviour
         {
             Debug.Log("Wall hit");
         }
-    }
-
-    void OnTriggerStay2D(Collider2D other) {
-        if(other.CompareTag("Player"))
-        {
-            Debug.Log("Triggered");
-            /* 
-            inSight = false;
-
-            Vector2 direction = other.transform.position - transform.position;
-            float angle = Vector2.Angle(direction, transform.forward);
-
-            if(angle < fov/2)
-            {
-                inSight = true;
-                PLS = other.transform.position;
-            }
-            */
-        }    
     }
 
     void heal()

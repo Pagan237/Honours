@@ -4,15 +4,25 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
-
+    public float fieldOfView = 70f;
+    private bool inSight = false;
+    private Vector2 enemyLastSeen;
+    private bool isReloading = false;
+    private Transform enemyPos;
+    private Enemy enemy;
+    private float timeAlive;
     public float speed;
-    public int health = 10;
+    public int health;
     private Rigidbody2D rb;
     private Vector2 moveVelocity;
     // Start is called before the first frame update
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
+        health = 2;
+        timeAlive = 0;
+        enemy = GameObject.FindGameObjectWithTag("AI").GetComponent<Enemy>();
+        enemyPos = GameObject.FindGameObjectWithTag("AI").GetComponent<Transform>();
     }
 
     // Update is called once per frame
