@@ -10,7 +10,7 @@ public class Enemy : MonoBehaviour
     public Vector2 PLS; //Position player was last seen
     public int ammo;
     public bool reloading; 
-    public Patrol patrol;
+    public EnemyPatrol patrol;
     public float speed;
     private Transform playerpos; //Position of player
 
@@ -29,21 +29,22 @@ public class Enemy : MonoBehaviour
     private float waitTime; //Time to wait until next patrol spot to be generated
     private Vector2 direction; //Direction AI is facing
     private Vector3 startPos; //Position of AI when beginning to travel to new spot
-
+    
     private float TimeSinceLastShot;
     private float TimeSinceReload;
     private int randSpot;
+
     // Start is called before the first frame update
     void Start()
     {
         reloading = false;
         ammo = 30;
-        patrol = GetComponent<Patrol>();
+        patrol = GetComponent<EnemyPatrol>();
         ES = GetComponent<EnemyShooting>();
         player = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>();
         playerpos = GameObject.FindGameObjectWithTag("Player").GetComponent<Transform>();
-        randSpot = Random.Range(0, patrol.moveSpots.Count);
-        direction = patrol.moveSpots[randSpot].position - transform.position;
+        randSpot = Random.Range(0, patrol.moveSpots.Count - 1);
+        direction = Vector3.forward;
     }
 
     // Update is called once per frame
@@ -53,8 +54,8 @@ public class Enemy : MonoBehaviour
         if(Vector2.Distance(transform.position, patrol.moveSpots[randSpot].position) < 0.2f){
             randSpot = Random.Range(0, patrol.moveSpots.Count);
             waitTime = patrol.startWaitTime;
-            if(waitTime < 0)
-                startPos = transform.position; 
+            if(waitTime <= 0)
+                startPos = transform.position;
             TimeSinceLastShot -= Time.deltaTime;
         }
         else

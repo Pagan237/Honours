@@ -8,6 +8,8 @@ TagManager:
   - AI
   - Wall
   - MoveSpot
+  - EnemyMove
+  - GAMove
   layers:
   - Default
   - TransparentFX
