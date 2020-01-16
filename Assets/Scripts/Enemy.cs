@@ -105,11 +105,6 @@ public class Enemy : MonoBehaviour
 
     void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.CompareTag("Player"))
-        {
-            player.health--;
-            Destroy(gameObject);
-        }
         if(other.CompareTag("Wall"))
         {
             Debug.Log("Wall hit");

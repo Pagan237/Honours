@@ -1974,9 +1974,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   fieldOfView: 70
-  speed: 10
+  speed: 3
   health: 10
   patrol: {fileID: 0}
+  ammo: 0
 --- !u!50 &4094545788000111850
 Rigidbody2D:
   serializedVersion: 4
@@ -2011,6 +2012,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   shot: {fileID: 7276872072297812994, guid: 3d00b254445a5f946b3bdc72f0d9d23e, type: 3}
+  playerPos: {fileID: 0}
+  fireRate: 0
 --- !u!58 &4094545788000111852
 CircleCollider2D:
   m_ObjectHideFlags: 0

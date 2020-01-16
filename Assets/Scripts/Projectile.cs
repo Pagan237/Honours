@@ -10,18 +10,18 @@ public class Projectile : MonoBehaviour
     private float TimeAlive = 0;
     private Transform enemyPos;
 
-    private Player player;
+    private Transform playerPos;
 
     // Start is called before the first frame update
     void Start()
     {
-        player = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>();
-        enemyPos = GameObject.FindGameObjectWithTag("Player").GetComponent<Transform>();
-        target = enemyPos.position;
-        if(CompareTag("Player"))
-            target = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        else if(CompareTag("AI"))
+        playerPos = GameObject.FindGameObjectWithTag("Player").GetComponent<Transform>();
+        enemyPos = GameObject.FindGameObjectWithTag("AI").GetComponent<Transform>();
+        //target = enemyPos.position;
+        if(transform.position == playerPos.position)
             target = enemyPos.position;
+        else
+            target = playerPos.position;
     }
 
     // Update is called once per frame
@@ -29,7 +29,7 @@ public class Projectile : MonoBehaviour
     {
         TimeAlive += Time.deltaTime;
         transform.position = Vector2.MoveTowards(transform.position, target, speed * Time.deltaTime);
-        if (Vector2.Distance(transform.position, target) < 1f)
+        if (Vector2.Distance(transform.position, target) < 0.1f)
             Destroy(gameObject);
     }
 }
