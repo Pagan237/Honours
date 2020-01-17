@@ -8,12 +8,14 @@ public class Player : MonoBehaviour
     private bool inSight = false;
     private Vector2 enemyLastSeen;
     private bool isReloading = false;
+    private float timeSinceReload;
     private Transform enemyPos;
     private Enemy enemy;
     private Shooting shooting;
     private float timeAlive;
     public float speed;
     public int health;
+    private int maxHealth = 3;
     private Rigidbody2D rb;
 
     public GAPatrol patrol;
@@ -25,10 +27,11 @@ public class Player : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        timeSinceReload = 0;
         ammo = 30;
         randSpot = Random.Range(0, 9);
         rb = GetComponent<Rigidbody2D>();
-        health = 2;
+        health = 3;
         timeAlive = 0;
         enemy = GameObject.FindGameObjectWithTag("AI").GetComponent<Enemy>();
         enemyPos = GameObject.FindGameObjectWithTag("AI").GetComponent<Transform>();
@@ -40,29 +43,46 @@ public class Player : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        timeSinceReload -= Time.deltaTime;
+        if(timeSinceReload < 0)
+            isReloading = false;
         if(Vector2.Distance(transform.position, patrol.moveSpots[randSpot].position) < 0.2f)
             randSpot = Random.Range(0, 9);
         float dirAngle = Mathf.Atan2(direction.x, direction.y) *Mathf.Rad2Deg;
         transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.AngleAxis(dirAngle, Vector3.forward),10000*Time.deltaTime);
         direction = patrol.moveSpots[randSpot].position - transform.position;
-        transform.position = Vector2.MoveTowards(transform.position, patrol.moveSpots[randSpot].position, speed * Time.deltaTime);
         Vector2 enemyDirection = enemyPos.position - transform.position;
         float angle = Vector2.Angle(enemyDirection, direction);
         timeSinceLastShot -= Time.deltaTime;
         if(enemyDirection.x < 5 && enemyDirection.y < 5){
             if(angle < fieldOfView/2 && angle != 0){
                 transform.position = Vector2.MoveTowards(transform.position, enemyPos.position, speed * Time.deltaTime);
-                if(timeSinceLastShot < 0){
+                if(timeSinceLastShot < 0 && !isReloading && ammo > 0){
                     Instantiate(shooting.shot, shooting.playerPos.position, Quaternion.identity);
                     timeSinceLastShot = shooting.fireRate;
                     ammo--;
                 }
             }
+            else
+                transform.position = Vector2.MoveTowards(transform.position, patrol.moveSpots[randSpot].position, speed * Time.deltaTime);
+        }
+        else
+            transform.position = Vector2.MoveTowards(transform.position, patrol.moveSpots[randSpot].position, speed * Time.deltaTime);
+        if(health < 2)
+            heal();
+        if(ammo == 0){
+            reload();
         }
     }
+    void heal(){
+        health++;
+        if (health > maxHealth)
+            health = maxHealth;
+    }
 
-    public Vector2 getPosition()
-    {
-        return rb.position;
+    void reload(){
+        ammo = 30;
+        isReloading = true;
+        timeSinceReload = 2.0f;
     }
 }

@@ -18,9 +18,9 @@ public class Enemy : MonoBehaviour
 
     private Player player;
 
-    public int health = 1;
+    public int health;
 
-    public int maxHealth = 10;
+    public int maxHealth = 3;
     private float TimeAlive;
 
     private float TimeSpentHealing = 0;
@@ -37,6 +37,7 @@ public class Enemy : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        health = 3;
         reloading = false;
         ammo = 30;
         patrol = GetComponent<EnemyPatrol>();
@@ -80,7 +81,7 @@ public class Enemy : MonoBehaviour
             {
                 //If angle is less than field of view and player isn't too far away
                 transform.position = Vector2.MoveTowards(transform.position, playerpos.position, speed * Time.deltaTime);
-                if(TimeSinceLastShot < 0 && !reloading){
+                if(TimeSinceLastShot < 0 && !reloading && ammo > 0){
                     //If AI isn't reloading, shoot at player
                     Instantiate(ES.shot, ES.AIpos.position, Quaternion.identity);
                     TimeSinceLastShot = ES.StartTimeBetweenShots;
@@ -96,6 +97,9 @@ public class Enemy : MonoBehaviour
             transform.position = Vector2.MoveTowards(transform.position, patrol.moveSpots[randSpot].position, speed * Time.deltaTime);
         if(ammo == 0){
             reload();
+        }
+        if(health < 2){
+            heal();
         }
         TimeSinceReload -= Time.deltaTime;
         if(TimeSinceReload < 0){
@@ -113,7 +117,7 @@ public class Enemy : MonoBehaviour
 
     void heal()
     {
-        health += 4;
+        health ++;
         if (health > maxHealth)
             health = maxHealth;
     }

@@ -5,7 +5,7 @@ using UnityEngine;
 public class Shooting : MonoBehaviour
 {
 
-    public GameObject shot;
+    public Projectile shot;
     public Transform playerPos;
     public float fireRate;
     // Start is called before the first frame update
