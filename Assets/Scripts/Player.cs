@@ -85,4 +85,34 @@ public class Player : MonoBehaviour
         isReloading = true;
         timeSinceReload = 2.0f;
     }
+
+    void Move(Vector2 eD, float a){
+        eD = enemyPos.position - transform.position;
+        a = Vector2.Angle(eD, direction);
+        if(eD.x < 5 && eD.y < 5){
+            if(a < fieldOfView/2 && a != 0){
+                transform.position = Vector2.MoveTowards(transform.position, enemyPos.position, speed * Time.deltaTime);
+            }
+            else
+                transform.position = Vector2.MoveTowards(transform.position, patrol.moveSpots[randSpot].position, speed * Time.deltaTime);
+        }
+        else
+            transform.position = Vector2.MoveTowards(transform.position, patrol.moveSpots[randSpot].position, speed * Time.deltaTime);
+
+    }
+
+    void Shoot(Vector2 eD, float a){
+        if(eD.x < 5 && eD.y < 5){
+            if(a < fieldOfView/2 && a != 0){
+                shooting.inView = false;
+                Instantiate(shooting.shot, shooting.playerPos.position, Quaternion.identity);
+                timeSinceLastShot = shooting.fireRate;
+                ammo--;
+            }
+            else
+                
+        }
+        else
+            
+    }
 }

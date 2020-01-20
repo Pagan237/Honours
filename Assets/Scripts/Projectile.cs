@@ -12,12 +12,13 @@ public class Projectile : MonoBehaviour
 
     private Transform playerPos;
 
+    public bool inView = true;
+
     // Start is called before the first frame update
     void Start()
     {
         playerPos = GameObject.FindGameObjectWithTag("Player").GetComponent<Transform>();
         enemyPos = GameObject.FindGameObjectWithTag("AI").GetComponent<Transform>();
-        //target = enemyPos.position;
         if(transform.position == playerPos.position)
             target = enemyPos.position;
         else
