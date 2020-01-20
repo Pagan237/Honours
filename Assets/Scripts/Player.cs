@@ -56,18 +56,13 @@ public class Player : MonoBehaviour
         timeSinceLastShot -= Time.deltaTime;
         if(enemyDirection.x < 5 && enemyDirection.y < 5){
             if(angle < fieldOfView/2 && angle != 0){
-                transform.position = Vector2.MoveTowards(transform.position, enemyPos.position, speed * Time.deltaTime);
-                if(timeSinceLastShot < 0 && !isReloading && ammo > 0){
-                    Instantiate(shooting.shot, shooting.playerPos.position, Quaternion.identity);
-                    timeSinceLastShot = shooting.fireRate;
-                    ammo--;
-                }
+                Shoot(enemyDirection, angle);
             }
             else
-                transform.position = Vector2.MoveTowards(transform.position, patrol.moveSpots[randSpot].position, speed * Time.deltaTime);
+                Move(enemyDirection, angle);
         }
         else
-            transform.position = Vector2.MoveTowards(transform.position, patrol.moveSpots[randSpot].position, speed * Time.deltaTime);
+            Move(enemyDirection, angle);
         if(health < 2)
             heal();
         if(ammo == 0){
@@ -104,15 +99,26 @@ public class Player : MonoBehaviour
     void Shoot(Vector2 eD, float a){
         if(eD.x < 5 && eD.y < 5){
             if(a < fieldOfView/2 && a != 0){
-                shooting.inView = false;
+                shooting.shot.inView = true;
+                shooting.shot.target = enemyPos.position;
                 Instantiate(shooting.shot, shooting.playerPos.position, Quaternion.identity);
                 timeSinceLastShot = shooting.fireRate;
                 ammo--;
             }
-            else
-                
+            else{
+                shooting.shot.inView = false;
+                shooting.shot.target = patrol.moveSpots[randSpot].position;
+                Instantiate(shooting.shot, shooting.playerPos.position, Quaternion.identity);
+                timeSinceLastShot = shooting.fireRate;
+                ammo--;
+            }
         }
-        else
-            
+        else{
+            shooting.shot.inView = false;
+            shooting.shot.target = patrol.moveSpots[randSpot].position;
+            Instantiate(shooting.shot, shooting.playerPos.position, Quaternion.identity);
+            timeSinceLastShot = shooting.fireRate;
+            ammo--;
+        }    
     }
 }

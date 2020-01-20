@@ -5,23 +5,21 @@ using UnityEngine;
 public class Projectile : MonoBehaviour
 {
 
-    private Vector2 target;
+    public Vector2 target;
     public float speed;
     private float TimeAlive = 0;
     private Transform enemyPos;
 
     private Transform playerPos;
 
-    public bool inView = true;
+    public bool inView;
 
     // Start is called before the first frame update
     void Start()
     {
         playerPos = GameObject.FindGameObjectWithTag("Player").GetComponent<Transform>();
         enemyPos = GameObject.FindGameObjectWithTag("AI").GetComponent<Transform>();
-        if(transform.position == playerPos.position)
-            target = enemyPos.position;
-        else
+        if(transform.position == enemyPos.position)
             target = playerPos.position;
     }
 
@@ -30,7 +28,7 @@ public class Projectile : MonoBehaviour
     {
         TimeAlive += Time.deltaTime;
         transform.position = Vector2.MoveTowards(transform.position, target, speed * Time.deltaTime);
-        if (Vector2.Distance(transform.position, target) < 0.1f)
+        if (Vector2.Distance(transform.position, target) < 0.1f || TimeAlive > 1)
             Destroy(gameObject);
     }
 }

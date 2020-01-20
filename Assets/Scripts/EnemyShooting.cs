@@ -5,7 +5,7 @@ using UnityEngine;
 public class EnemyShooting : MonoBehaviour
 {
 
-    public GameObject shot;
+    public Projectile shot;
     private float TimeSinceLastShot;
 
     public float StartTimeBetweenShots;

@@ -83,6 +83,7 @@ public class Enemy : MonoBehaviour
                 transform.position = Vector2.MoveTowards(transform.position, playerpos.position, speed * Time.deltaTime);
                 if(TimeSinceLastShot < 0 && !reloading && ammo > 0){
                     //If AI isn't reloading, shoot at player
+                    //ES.shot.target = playerpos.position;
                     Instantiate(ES.shot, ES.AIpos.position, Quaternion.identity);
                     TimeSinceLastShot = ES.StartTimeBetweenShots;
                     ammo--;
