@@ -6,27 +6,31 @@ public class Player : MonoBehaviour
 {
     public float fieldOfView = 70f;
     private bool inSight = false;
+    private Rigidbody2D rb;
+    public GAPatrol patrol;
     private Vector2 enemyLastSeen;
-    private bool isReloading = false;
-    private float timeSinceReload;
     private Transform enemyPos;
     private Enemy enemy;
     private Shooting shooting;
+    public int ammo;
+    private float timeSinceLastShot;
+    private bool isReloading;
+    private float timeSinceReload;
     private float timeAlive;
     public float speed;
     public int health;
     private int maxHealth = 3;
-    private Rigidbody2D rb;
-
-    public GAPatrol patrol;
-    private Vector2 moveVelocity;
-    public int ammo;
+    private float timeSpentHealing;
+    private bool isHealing;
     private int randSpot;
     private Vector2 direction;
-    private float timeSinceLastShot;
+
     // Start is called before the first frame update
     void Start()
     {
+        isReloading = false;
+        timeSpentHealing = 0;
+        isHealing = false;
         timeSinceReload = 0;
         ammo = 30;
         randSpot = Random.Range(0, 9);
@@ -43,6 +47,10 @@ public class Player : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        timeAlive += Time.deltaTime;
+        timeSpentHealing -= Time.deltaTime;
+        if(timeSpentHealing < 0)
+            isHealing = false;
         timeSinceReload -= Time.deltaTime;
         if(timeSinceReload < 0)
             isReloading = false;
@@ -55,7 +63,7 @@ public class Player : MonoBehaviour
         float angle = Vector2.Angle(enemyDirection, direction);
         timeSinceLastShot -= Time.deltaTime;
         if(enemyDirection.x < 5 && enemyDirection.y < 5){
-            if(angle < fieldOfView/2 && angle != 0){
+            if(angle < fieldOfView/2 && angle != 0){      
                 Shoot(enemyDirection, angle);
             }
             else
@@ -71,6 +79,8 @@ public class Player : MonoBehaviour
     }
     void heal(){
         health++;
+        timeSpentHealing = 2f;
+        isHealing = true;
         if (health > maxHealth)
             health = maxHealth;
     }
@@ -99,14 +109,12 @@ public class Player : MonoBehaviour
     void Shoot(Vector2 eD, float a){
         if(eD.x < 5 && eD.y < 5){
             if(a < fieldOfView/2 && a != 0){
-                shooting.shot.inView = true;
                 shooting.shot.target = enemyPos.position;
                 Instantiate(shooting.shot, shooting.playerPos.position, Quaternion.identity);
                 timeSinceLastShot = shooting.fireRate;
                 ammo--;
             }
             else{
-                shooting.shot.inView = false;
                 shooting.shot.target = patrol.moveSpots[randSpot].position;
                 Instantiate(shooting.shot, shooting.playerPos.position, Quaternion.identity);
                 timeSinceLastShot = shooting.fireRate;
@@ -114,7 +122,6 @@ public class Player : MonoBehaviour
             }
         }
         else{
-            shooting.shot.inView = false;
             shooting.shot.target = patrol.moveSpots[randSpot].position;
             Instantiate(shooting.shot, shooting.playerPos.position, Quaternion.identity);
             timeSinceLastShot = shooting.fireRate;

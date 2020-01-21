@@ -10,33 +10,28 @@ public class Enemy : MonoBehaviour
     public Vector2 PLS; //Position player was last seen
     public int ammo;
     public bool reloading; 
-    public EnemyPatrol patrol;
-    public float speed;
-    private Transform playerpos; //Position of player
-
-    private EnemyShooting ES;
-
-    private Player player;
-
-    public int health;
-
-    public int maxHealth = 3;
-    private float TimeAlive;
-
-    private float TimeSpentHealing = 0;
-    public bool isHealing = false; //is AI healing
-
-    private float waitTime; //Time to wait until next patrol spot to be generated
-    private Vector2 direction; //Direction AI is facing
-    private Vector3 startPos; //Position of AI when beginning to travel to new spot
-    
     private float TimeSinceLastShot;
     private float TimeSinceReload;
+    public float speed;
+    public int health;
+    public int maxHealth = 3;
+    private float TimeAlive;
+    private float TimeSpentHealing = 0;
+    public bool isHealing = false; //is AI healing
+    public EnemyPatrol patrol;
+    private float waitTime; //Time to wait until next patrol spot to be generated
+    private Transform playerpos; //Position of player
+    private EnemyShooting ES;
+    private Player player;
+    private Vector2 direction; //Direction AI is facing
+    private Vector3 startPos; //Position of AI when beginning to travel to new spot
     private int randSpot;
+    private Vector2 spawnPoint;
 
     // Start is called before the first frame update
     void Start()
     {
+        spawnPoint = transform.position;
         health = 3;
         reloading = false;
         ammo = 30;
@@ -52,6 +47,9 @@ public class Enemy : MonoBehaviour
     
     void Update()
     {
+        TimeSpentHealing -= Time.deltaTime;
+        if(TimeSpentHealing <= 0)
+            isHealing = false;
         if(Vector2.Distance(transform.position, patrol.moveSpots[randSpot].position) < 0.2f){
             randSpot = Random.Range(0, patrol.moveSpots.Count);
             waitTime = patrol.startWaitTime;
@@ -81,7 +79,7 @@ public class Enemy : MonoBehaviour
             {
                 //If angle is less than field of view and player isn't too far away
                 transform.position = Vector2.MoveTowards(transform.position, playerpos.position, speed * Time.deltaTime);
-                if(TimeSinceLastShot < 0 && !reloading && ammo > 0){
+                if(TimeSinceLastShot < 0 && !reloading && ammo > 0 && !isHealing){
                     //If AI isn't reloading, shoot at player
                     //ES.shot.target = playerpos.position;
                     Instantiate(ES.shot, ES.AIpos.position, Quaternion.identity);
@@ -118,7 +116,9 @@ public class Enemy : MonoBehaviour
 
     void heal()
     {
-        health ++;
+        health++;
+        isHealing = true;
+        TimeSpentHealing = 2.0f;
         if (health > maxHealth)
             health = maxHealth;
     }
@@ -126,5 +126,13 @@ public class Enemy : MonoBehaviour
         ammo = 30;
         reloading = true;
         TimeSinceReload = 2.0f;
+    }
+
+    void reset(){
+        transform.position = spawnPoint;
+        health = 3;
+        reloading = false;
+        ammo = 30;
+        isHealing = false;
     }
 }
