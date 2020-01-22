@@ -554,6 +554,33 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
+--- !u!1 &577739068 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6290374422136843861, guid: 2eb7bf69c02b13e4a8ee8eb75142939e,
+    type: 3}
+  m_PrefabInstance: {fileID: 1504972287}
+  m_PrefabAsset: {fileID: 0}
+--- !u!50 &577739075
+Rigidbody2D:
+  serializedVersion: 4
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 577739068}
+  m_BodyType: 1
+  m_Simulated: 1
+  m_UseFullKinematicContacts: 0
+  m_UseAutoMass: 0
+  m_Mass: 1
+  m_LinearDrag: 0
+  m_AngularDrag: 0.05
+  m_GravityScale: 0
+  m_Material: {fileID: 0}
+  m_Interpolate: 0
+  m_SleepingMode: 1
+  m_CollisionDetection: 0
+  m_Constraints: 0
 --- !u!4 &615073601 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7660049917519036959, guid: 2316fe20fabddb248a4389d04e275a8d,
@@ -2078,6 +2105,16 @@ PrefabInstance:
       propertyPath: moveSpots.Array.data[9]
       value: 
       objectReference: {fileID: 1609891519}
+    - target: {fileID: 2191993823918549644, guid: 1ff91c7753bf98846befa2ef38b3597e,
+        type: 3}
+      propertyPath: m_CollisionDetection
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2191993823918549642, guid: 1ff91c7753bf98846befa2ef38b3597e,
+        type: 3}
+      propertyPath: m_Radius
+      value: 0.09
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 1ff91c7753bf98846befa2ef38b3597e, type: 3}
 --- !u!1001 &6950307778563048250

@@ -109,10 +109,14 @@ public class Player : MonoBehaviour
     void Shoot(Vector2 eD, float a){
         if(eD.x < 5 && eD.y < 5){
             if(a < fieldOfView/2 && a != 0){
+                if(timeSinceLastShot < 0){
                 shooting.shot.target = enemyPos.position;
                 Instantiate(shooting.shot, shooting.playerPos.position, Quaternion.identity);
+                Debug.Log("Before Change: " + timeSinceLastShot);
                 timeSinceLastShot = shooting.fireRate;
+                Debug.Log("After Change: " + timeSinceLastShot);
                 ammo--;
+            }
             }
             else{
                 shooting.shot.target = patrol.moveSpots[randSpot].position;
