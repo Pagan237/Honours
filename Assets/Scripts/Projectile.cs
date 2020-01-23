@@ -10,7 +10,7 @@ public class Projectile : MonoBehaviour
     private float TimeAlive = 0;
     private Transform enemyPos;
     private Transform playerPos;
-    private string ownerTag;
+    public string ownerTag;
     public bool inView;
 
     // Start is called before the first frame update
@@ -37,11 +37,8 @@ public class Projectile : MonoBehaviour
     }
 
      void OnTriggerEnter2D(Collider2D other) {
-       // Debug.Log("Shooter: " + ownerTag);
-      //  Debug.Log("Target: " + other.gameObject.tag);
         if(other.gameObject.tag != ownerTag){
             Destroy(gameObject);
-        //    Debug.Log("YES");
         }
     }
 }

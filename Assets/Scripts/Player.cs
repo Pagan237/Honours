@@ -24,6 +24,7 @@ public class Player : MonoBehaviour
     private bool isHealing;
     private int randSpot;
     private Vector2 direction;
+    private Vector2 spawnPoint;
 
     // Start is called before the first frame update
     void Start()
@@ -42,6 +43,7 @@ public class Player : MonoBehaviour
         patrol = GetComponent<GAPatrol>();
         shooting = GetComponent<Shooting>();
         direction = Vector3.forward;
+        spawnPoint = transform.position;
     }
 
     // Update is called once per frame
@@ -71,18 +73,45 @@ public class Player : MonoBehaviour
         }
         else
             Move(enemyDirection, angle);
-        if(health < 2)
+        if(health < 2 && health > 0 && !isHealing)
             heal();
         if(ammo == 0){
             reload();
         }
+        if(health <= 0){
+            reset();
+        }
     }
+
+    void OnTriggerEnter2D(Collider2D proj)
+    {
+        if(proj.tag == "Projectile")
+        {
+            Projectile pro = proj.GetComponent<Projectile>();
+            if(pro.ownerTag != gameObject.tag){
+                Debug.Log("Hit landed");
+                health--;
+            }
+        }
+    }
+
     void heal(){
         health++;
         timeSpentHealing = 2f;
         isHealing = true;
         if (health > maxHealth)
             health = maxHealth;
+    }
+    
+    void reset(){
+        isReloading = false;
+        timeSpentHealing = 0;
+        isHealing = false;
+        timeSinceReload = 0;
+        ammo = 30;
+        health = 3;
+        timeAlive = 0;
+        transform.position = spawnPoint;
     }
 
     void reload(){
@@ -112,12 +141,10 @@ public class Player : MonoBehaviour
                 if(timeSinceLastShot < 0){
                 shooting.shot.target = enemyPos.position;
                 Instantiate(shooting.shot, shooting.playerPos.position, Quaternion.identity);
-                Debug.Log("Before Change: " + timeSinceLastShot);
                 timeSinceLastShot = shooting.fireRate;
-                Debug.Log("After Change: " + timeSinceLastShot);
                 ammo--;
             }
-            }
+        }
             else{
                 shooting.shot.target = patrol.moveSpots[randSpot].position;
                 Instantiate(shooting.shot, shooting.playerPos.position, Quaternion.identity);

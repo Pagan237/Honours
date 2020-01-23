@@ -97,20 +97,27 @@ public class Enemy : MonoBehaviour
         if(ammo == 0){
             reload();
         }
-        if(health < 2){
+        if(health < 2 && health > 0 && TimeSpentHealing < 0){
             heal();
         }
         TimeSinceReload -= Time.deltaTime;
         if(TimeSinceReload < 0){
             reloading = false;
         }
+        if(health <= 0){
+            reset();
+        }
     }
 
-    void OnTriggerEnter2D(Collider2D other)
+    void OnTriggerEnter2D(Collider2D proj)
     {
-        if(other.CompareTag("Wall"))
+        if(proj.tag == "Projectile")
         {
-            Debug.Log("Wall hit");
+            Projectile pro = proj.GetComponent<Projectile>();
+            if(pro.ownerTag != gameObject.tag){
+                Debug.Log("Hit landed");
+                health--;
+            }
         }
     }
 
