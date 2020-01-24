@@ -5,7 +5,7 @@ using UnityEngine;
 public class Player : MonoBehaviour
 {
     public float fieldOfView = 70f;
-    private bool inSight = false;
+    public bool inSight = false;
     private Rigidbody2D rb;
     public GAPatrol patrol;
     private Vector2 enemyLastSeen;
@@ -65,7 +65,8 @@ public class Player : MonoBehaviour
         float angle = Vector2.Angle(enemyDirection, direction);
         timeSinceLastShot -= Time.deltaTime;
         if(enemyDirection.x < 5 && enemyDirection.y < 5){
-            if(angle < fieldOfView/2 && angle != 0){      
+            if(angle < fieldOfView/2 && angle != 0){
+                inSight = true;      
                 Shoot(enemyDirection, angle);
             }
             else

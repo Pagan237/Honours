@@ -16,8 +16,8 @@ public class EnemyPatrol : MonoBehaviour
     {
         for (int i = 0; i < 10; i++)
         {
-            float y = Random.Range(Camera.main.ScreenToWorldPoint(new Vector2(0, 0)).y+1, Camera.main.ScreenToWorldPoint(new Vector2(0, Screen.height)).y - 1);
-            float x = Random.Range(Camera.main.ScreenToWorldPoint(new Vector2(0, 0)).x+1, Camera.main.ScreenToWorldPoint(new Vector2(Screen.width, 0)).x - 1);
+            float y = Random.Range(-5, 5);
+            float x = Random.Range(-10, 10);
             moveSpots[i].position = new Vector2(x, y);
         }
     }
