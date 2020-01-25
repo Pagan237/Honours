@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class Individual : MonoBehaviour
 {
-    private Player player;
-    private int fitness;
+    public Player player;
+    public int fitness;
     public bool active;
     public List<int> chromosomes;
     private int state;
@@ -40,6 +40,15 @@ public class Individual : MonoBehaviour
     }
 
     void action(int i){
-        
-    }
+        if(i == 1)
+            player.Shoot();
+        if (i == 2)
+            player.heal();
+        if(i == 3)
+            player.Retreat();
+        if(i == 4)
+            player.Move();
+        if(i == 5)
+            player.reload();
+    }   
 }

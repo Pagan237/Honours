@@ -10,13 +10,15 @@ public class Player : MonoBehaviour
     public GAPatrol patrol;
     private Vector2 enemyLastSeen;
     private Transform enemyPos;
+    private Vector2 enemyDirection;
+    private float angle;
     private Enemy enemy;
     private Shooting shooting;
     public int ammo;
     private float timeSinceLastShot;
     private bool isReloading;
     private float timeSinceReload;
-    private float timeAlive;
+    public float timeAlive;
     public float speed;
     public int health;
     private int maxHealth = 3;
@@ -44,6 +46,7 @@ public class Player : MonoBehaviour
         shooting = GetComponent<Shooting>();
         direction = Vector3.forward;
         spawnPoint = transform.position;
+        enemyDirection = enemyPos.position - transform.position;
     }
 
     // Update is called once per frame
@@ -61,19 +64,19 @@ public class Player : MonoBehaviour
         float dirAngle = Mathf.Atan2(direction.x, direction.y) *Mathf.Rad2Deg;
         transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.AngleAxis(dirAngle, Vector3.forward),10000*Time.deltaTime);
         direction = patrol.moveSpots[randSpot].position - transform.position;
-        Vector2 enemyDirection = enemyPos.position - transform.position;
-        float angle = Vector2.Angle(enemyDirection, direction);
+        enemyDirection = enemyPos.position - transform.position;
+        angle = Vector2.Angle(enemyDirection, direction);
         timeSinceLastShot -= Time.deltaTime;
         if(enemyDirection.x < 5 && enemyDirection.y < 5){
             if(angle < fieldOfView/2 && angle != 0){
                 inSight = true;      
-                Shoot(enemyDirection, angle);
+                Shoot();
             }
             else
-                Move(enemyDirection, angle);
+                Move();
         }
         else
-            Move(enemyDirection, angle);
+            Move();
         if(health < 2 && health > 0 && !isHealing)
             heal();
         if(ammo == 0){
@@ -96,7 +99,7 @@ public class Player : MonoBehaviour
         }
     }
 
-    void heal(){
+    public void heal(){
         health++;
         timeSpentHealing = 2f;
         isHealing = true;
@@ -104,7 +107,7 @@ public class Player : MonoBehaviour
             health = maxHealth;
     }
     
-    void reset(){
+    public void reset(){
         isReloading = false;
         timeSpentHealing = 0;
         isHealing = false;
@@ -115,17 +118,15 @@ public class Player : MonoBehaviour
         transform.position = spawnPoint;
     }
 
-    void reload(){
+    public void reload(){
         ammo = 30;
         isReloading = true;
         timeSinceReload = 2.0f;
     }
 
-    void Move(Vector2 eD, float a){
-        eD = enemyPos.position - transform.position;
-        a = Vector2.Angle(eD, direction);
-        if(eD.x < 5 && eD.y < 5){
-            if(a < fieldOfView/2 && a != 0){
+    public void Move(){
+        if(enemyDirection.x < 5 && enemyDirection.y < 5){
+            if(angle < fieldOfView/2 && angle != 0){
                 transform.position = Vector2.MoveTowards(transform.position, enemyPos.position, speed * Time.deltaTime);
             }
             else
@@ -136,9 +137,22 @@ public class Player : MonoBehaviour
 
     }
 
-    void Shoot(Vector2 eD, float a){
-        if(eD.x < 5 && eD.y < 5){
-            if(a < fieldOfView/2 && a != 0){
+    public void Retreat(){
+        int furthestIndex = 0;
+        float furthestDistance = 0;
+        for (int i = 0; i < patrol.moveSpots.Count; i++){
+            float dist = Vector2.Distance(patrol.moveSpots[i].position, enemyPos.position);
+            if(dist > furthestDistance){
+                furthestDistance = dist;
+                furthestIndex = i;
+            }
+        }
+        randSpot = furthestIndex;
+        transform.position = Vector2.MoveTowards(transform.position, patrol.moveSpots[randSpot].position, speed * Time.deltaTime);
+    }
+    public void Shoot(){
+        if(enemyDirection.x < 5 && enemyDirection.y < 5){
+            if(angle < fieldOfView/2 && angle != 0){
                 if(timeSinceLastShot < 0){
                 shooting.shot.target = enemyPos.position;
                 Instantiate(shooting.shot, shooting.playerPos.position, Quaternion.identity);
