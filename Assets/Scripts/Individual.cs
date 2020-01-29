@@ -13,7 +13,6 @@ public class Individual : MonoBehaviour
 
     private void Awake()
     {
-        //chromosomes = new List<int>();
         fitness = 0;
         active = false;
         player = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>();

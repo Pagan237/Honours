@@ -4,12 +4,14 @@ using UnityEngine;
 
 public class Algorithm : MonoBehaviour
 {
+    private int activeIndex;
     public List<Individual> Individuals;
     private int generation;
     private int mutateFactor;
     // Start is called before the first frame update
     void Start()
     {
+        activeIndex = 0;
         Individuals = new List<Individual>();
         generation = 1;
         for (int i = 0; i < 10; i++)
@@ -28,10 +30,14 @@ public class Algorithm : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        Debug.Log(Individuals.Count);
-        for(int i = 0; i < Individuals.Count; i++)
-        {
-            
+        Debug.Log(activeIndex);
+        Individuals[activeIndex].active = true;
+        if(Individuals[activeIndex].player.timeAlive >= 5){
+            Individuals[activeIndex].player.reset();
+            Individuals[activeIndex].active = false;
+            activeIndex++;
+            if(activeIndex == Individuals.Count)
+                activeIndex = 0;
         }
     }
 
