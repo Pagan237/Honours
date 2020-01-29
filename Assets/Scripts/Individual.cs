@@ -10,8 +10,10 @@ public class Individual : MonoBehaviour
     public List<int> chromosomes;
     private int state;
     // Start is called before the first frame update
-    void Start()
+
+    private void Awake()
     {
+        //chromosomes = new List<int>();
         fitness = 0;
         active = false;
         player = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>();
@@ -20,35 +22,39 @@ public class Individual : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(player.health < 2 && player.ammo < 10 && player.inSight == true)
-            state = 0;
-        if(player.health < 2 && player.ammo < 10 && player.inSight == false)
-            state = 1;
-        if(player.health >= 2 && player.ammo <= 10 && player.inSight == true)
-            state = 2;
-        if(player.health >= 2 && player.ammo < 10 && player.inSight == false)
-            state = 3;
-        if(player.health < 2 && player.ammo >= 10 && player.inSight == true)
-            state = 4;
-        if(player.health < 2 && player.ammo >= 10 && player.inSight == false)
-            state = 5;
-        if(player.health >= 2 && player.ammo >= 10 && player.inSight == true)
-            state = 6;
-        if(player.health >= 2 && player.ammo >= 10 && player.inSight == false)
-            state = 7;
-        action(chromosomes[state]);
+        if (active == true)
+        {
+            if (player.health < 2 && player.ammo < 10 && player.inSight == true)
+                state = 0;
+            if (player.health < 2 && player.ammo < 10 && player.inSight == false)
+                state = 1;
+            if (player.health >= 2 && player.ammo <= 10 && player.inSight == true)
+                state = 2;
+            if (player.health >= 2 && player.ammo < 10 && player.inSight == false)
+                state = 3;
+            if (player.health < 2 && player.ammo >= 10 && player.inSight == true)
+                state = 4;
+            if (player.health < 2 && player.ammo >= 10 && player.inSight == false)
+                state = 5;
+            if (player.health >= 2 && player.ammo >= 10 && player.inSight == true)
+                state = 6;
+            if (player.health >= 2 && player.ammo >= 10 && player.inSight == false)
+                state = 7;
+            action(chromosomes[state]);
+        }
     }
 
-    void action(int i){
-        if(i == 1)
+    void action(int i)
+    {
+        if (i == 1)
             player.Shoot();
         if (i == 2)
             player.heal();
-        if(i == 3)
+        if (i == 3)
             player.Retreat();
-        if(i == 4)
+        if (i == 4)
             player.Move();
-        if(i == 5)
+        if (i == 5)
             player.reload();
-    }   
+    }
 }

@@ -67,6 +67,7 @@ public class Player : MonoBehaviour
         enemyDirection = enemyPos.position - transform.position;
         angle = Vector2.Angle(enemyDirection, direction);
         timeSinceLastShot -= Time.deltaTime;
+        /* 
         if(enemyDirection.x < 5 && enemyDirection.y < 5){
             if(angle < fieldOfView/2 && angle != 0){
                 inSight = true;      
@@ -85,6 +86,7 @@ public class Player : MonoBehaviour
         if(health <= 0){
             reset();
         }
+        */
     }
 
     void OnTriggerEnter2D(Collider2D proj)

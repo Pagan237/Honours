@@ -4,19 +4,23 @@ using UnityEngine;
 
 public class Algorithm : MonoBehaviour
 {
-    private List<Individual> Individuals;
+    public List<Individual> Individuals;
     private int generation;
     private int mutateFactor;
     // Start is called before the first frame update
     void Start()
     {
+        Individuals = new List<Individual>();
         generation = 1;
-        for(int i = 0; i < 10; i++)
+        for (int i = 0; i < 10; i++)
         {
-            Individual individual = new Individual();
-            for (int c = 0; c < 8; c++){
+            Individual individual = gameObject.AddComponent(typeof(Individual)) as Individual;
+            individual.chromosomes = new List<int>();
+            for (int c = 0; c < 8; c++)
+            {
                 int rand = Random.Range(1, 5);
                 individual.chromosomes.Add(rand);
+                Debug.Log(individual.chromosomes);
             }
             Individuals.Add(individual);
         }
@@ -25,30 +29,21 @@ public class Algorithm : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        while (generation < 20){
-            foreach(Individual individual in Individuals){
-                individual.active = true;
-                while(individual.active == true){
-                    if(individual.player.timeAlive >= 30)
-                        individual.active = false;
-                }
-            }
-            SelectParents();
-            Crossover();
-            Mutate();
-            generation++;
-        }
-    }
-
-    void Crossover(){
 
     }
 
-    void SelectParents(){
+    void Crossover()
+    {
 
     }
 
-    void Mutate(){
+    void SelectParents()
+    {
+
+    }
+
+    void Mutate()
+    {
 
     }
 }
