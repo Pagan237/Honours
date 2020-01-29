@@ -20,7 +20,6 @@ public class Algorithm : MonoBehaviour
             {
                 int rand = Random.Range(1, 5);
                 individual.chromosomes.Add(rand);
-                Debug.Log(individual.chromosomes);
             }
             Individuals.Add(individual);
         }
@@ -29,7 +28,11 @@ public class Algorithm : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
+        Debug.Log(Individuals.Count);
+        for(int i = 0; i < Individuals.Count; i++)
+        {
+            
+        }
     }
 
     void Crossover()
