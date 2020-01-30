@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
+    public int fitness;
     public float fieldOfView = 70f;
     public bool inSight = false;
     private Rigidbody2D rb;
@@ -31,6 +32,7 @@ public class Player : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        fitness = 0;
         isReloading = false;
         timeSpentHealing = 0;
         isHealing = false;
@@ -67,17 +69,13 @@ public class Player : MonoBehaviour
         enemyDirection = enemyPos.position - transform.position;
         angle = Vector2.Angle(enemyDirection, direction);
         timeSinceLastShot -= Time.deltaTime;
-        /* 
+        
         if(enemyDirection.x < 5 && enemyDirection.y < 5){
             if(angle < fieldOfView/2 && angle != 0){
-                inSight = true;      
-                Shoot();
-            }
-            else
-                Move();
+                 inSight = true;      
+                 }
         }
-        else
-            Move();
+        /*
         if(health < 2 && health > 0 && !isHealing)
             heal();
         if(ammo == 0){
@@ -102,11 +100,19 @@ public class Player : MonoBehaviour
     }
 
     public void heal(){
-        health++;
-        timeSpentHealing = 2f;
-        isHealing = true;
-        if (health > maxHealth)
-            health = maxHealth;
+        if(!isHealing && !isReloading){
+            if(!inSight){
+                if(health < 2)
+                    fitness += 5;
+                else if(health == 2)
+                    fitness += 3;
+            }
+            health++;
+            timeSpentHealing = 2f;
+            isHealing = true;
+            if (health > maxHealth)
+                health = maxHealth;
+        }
     }
     
     public void reset(){
@@ -118,28 +124,45 @@ public class Player : MonoBehaviour
         health = 3;
         timeAlive = 0;
         transform.position = spawnPoint;
+        fitness = 0;
     }
 
     public void reload(){
-        ammo = 30;
-        isReloading = true;
-        timeSinceReload = 2.0f;
+        if(!isReloading && !isHealing)
+        {
+            if(!inSight){
+                if(ammo < 10)
+                    fitness += 5;
+                else if(ammo> 10 && ammo < 30)
+                    fitness += 2;
+            }
+            ammo = 30;
+            isReloading = true;
+            timeSinceReload = 2.0f;
+        }
     }
 
     public void Move(){
-        if(enemyDirection.x < 5 && enemyDirection.y < 5){
-            if(angle < fieldOfView/2 && angle != 0){
+        if(inSight){
                 transform.position = Vector2.MoveTowards(transform.position, enemyPos.position, speed * Time.deltaTime);
-            }
-            else
-                transform.position = Vector2.MoveTowards(transform.position, patrol.moveSpots[randSpot].position, speed * Time.deltaTime);
         }
-        else
+        else{
             transform.position = Vector2.MoveTowards(transform.position, patrol.moveSpots[randSpot].position, speed * Time.deltaTime);
-
+            if(ammo > 10 && health >= 2)
+                fitness += 5;
+            else if(ammo > 10 || health >= 2){
+                fitness += 2;
+            }
+        }
     }
 
     public void Retreat(){
+        if(inSight){
+            if(ammo < 10 && health < 2)
+                fitness += 5;
+            else if (ammo < 10 || health < 2)
+                fitness += 3;
+        }
         int furthestIndex = 0;
         float furthestDistance = 0;
         for (int i = 0; i < patrol.moveSpots.Count; i++){
@@ -153,17 +176,16 @@ public class Player : MonoBehaviour
         transform.position = Vector2.MoveTowards(transform.position, patrol.moveSpots[randSpot].position, speed * Time.deltaTime);
     }
     public void Shoot(){
-        if(enemyDirection.x < 5 && enemyDirection.y < 5){
-            if(angle < fieldOfView/2 && angle != 0){
-                if(timeSinceLastShot < 0){
-                shooting.shot.target = enemyPos.position;
-                Instantiate(shooting.shot, shooting.playerPos.position, Quaternion.identity);
-                timeSinceLastShot = shooting.fireRate;
-                ammo--;
+        if(inSight){
+            if(ammo > 10 && health > 2){
+                fitness += 5;
             }
-        }
-            else{
-                shooting.shot.target = patrol.moveSpots[randSpot].position;
+            else if (ammo > 10 || health > 2)
+                fitness += 3;
+            else
+                fitness += 2;
+            if(timeSinceLastShot < 0 && !isReloading && !isHealing){
+                shooting.shot.target = enemyPos.position;
                 Instantiate(shooting.shot, shooting.playerPos.position, Quaternion.identity);
                 timeSinceLastShot = shooting.fireRate;
                 ammo--;

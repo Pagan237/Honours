@@ -27,7 +27,7 @@ public class Individual : MonoBehaviour
                 state = 0;
             if (player.health < 2 && player.ammo < 10 && player.inSight == false)
                 state = 1;
-            if (player.health >= 2 && player.ammo <= 10 && player.inSight == true)
+            if (player.health >= 2 && player.ammo < 10 && player.inSight == true)
                 state = 2;
             if (player.health >= 2 && player.ammo < 10 && player.inSight == false)
                 state = 3;

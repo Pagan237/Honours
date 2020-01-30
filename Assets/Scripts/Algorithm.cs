@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class Algorithm : MonoBehaviour
 {
+    private int population;
     private int activeIndex;
     public List<Individual> Individuals;
     private int generation;
@@ -11,10 +12,11 @@ public class Algorithm : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        population = 10;
         activeIndex = 0;
         Individuals = new List<Individual>();
         generation = 1;
-        for (int i = 0; i < 10; i++)
+        for (int i = 0; i < population; i++)
         {
             Individual individual = gameObject.AddComponent(typeof(Individual)) as Individual;
             individual.chromosomes = new List<int>();
@@ -30,14 +32,20 @@ public class Algorithm : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        Debug.Log(activeIndex);
+        //Debug.Log(activeIndex);
         Individuals[activeIndex].active = true;
         if(Individuals[activeIndex].player.timeAlive >= 5){
+            Individuals[activeIndex].fitness = Individuals[activeIndex].player.fitness;
+            Debug.Log("Fitness: " + Individuals[activeIndex].fitness);
             Individuals[activeIndex].player.reset();
             Individuals[activeIndex].active = false;
             activeIndex++;
-            if(activeIndex == Individuals.Count)
+            if(activeIndex == population){
+                int bestIndex = SelectParents();
+                int secondBest = SelectParents();
+                Crossover();
                 activeIndex = 0;
+            }
         }
     }
 
@@ -46,9 +54,19 @@ public class Algorithm : MonoBehaviour
 
     }
 
-    void SelectParents()
+    private int SelectParents()
     {
-
+        int bestIndex = 0;
+        int highestFitness = 0;
+        for(int i = 0; i < population; i++)
+        {
+            if(Individuals[i].fitness >= highestFitness)
+            {
+                highestFitness = Individuals[i].fitness;
+                bestIndex = i;
+            }
+        }
+        return bestIndex;
     }
 
     void Mutate()

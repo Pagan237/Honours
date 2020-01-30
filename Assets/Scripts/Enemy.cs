@@ -115,7 +115,6 @@ public class Enemy : MonoBehaviour
         {
             Projectile pro = proj.GetComponent<Projectile>();
             if(pro.ownerTag != gameObject.tag){
-                Debug.Log("Hit landed");
                 health--;
             }
         }
