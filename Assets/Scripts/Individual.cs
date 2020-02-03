@@ -16,6 +16,7 @@ public class Individual : MonoBehaviour
         fitness = 0;
         active = false;
         player = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>();
+        chromosomes = new List<int>();
     }
 
     // Update is called once per frame
