@@ -134,7 +134,7 @@ public class Enemy : MonoBehaviour
         TimeSinceReload = 2.0f;
     }
 
-    void reset(){
+    public void reset(){
         transform.position = spawnPoint;
         health = 3;
         reloading = false;

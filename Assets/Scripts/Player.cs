@@ -28,6 +28,7 @@ public class Player : MonoBehaviour
     private int randSpot;
     private Vector2 direction;
     private Vector2 spawnPoint;
+    public bool dead = false;
 
     // Start is called before the first frame update
     void Start()
@@ -74,6 +75,9 @@ public class Player : MonoBehaviour
             if(angle < fieldOfView/2 && angle != 0){
                  inSight = true;      
                  }
+        }
+        if(health <= 0){
+            dead = true;
         }
         /*
         if(health < 2 && health > 0 && !isHealing)
@@ -125,6 +129,8 @@ public class Player : MonoBehaviour
         timeAlive = 0;
         transform.position = spawnPoint;
         fitness = 0;
+        enemy.reset();
+        dead = false;
     }
 
     public void reload(){

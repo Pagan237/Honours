@@ -19,10 +19,9 @@ public class Algorithm : MonoBehaviour
         for (int i = 0; i < population; i++)
         {
             Individual individual = gameObject.AddComponent(typeof(Individual)) as Individual;
-        //    individual.chromosomes = new List<int>();
             for (int c = 0; c < 8; c++)
             {
-                int rand = Random.Range(1, 5);
+                int rand = Random.Range(1, 6);
                 individual.chromosomes.Add(rand);
             }
             Individuals.Add(individual);
@@ -33,7 +32,7 @@ public class Algorithm : MonoBehaviour
     void Update()
     {
         Individuals[activeIndex].active = true;
-        if(Individuals[activeIndex].player.timeAlive >= 1){
+        if(Individuals[activeIndex].player.timeAlive >= 30 || Individuals[activeIndex].player.dead == true){
             Individuals[activeIndex].fitness = Individuals[activeIndex].player.fitness;
             Debug.Log("Fitness: " + Individuals[activeIndex].fitness);
             Individuals[activeIndex].player.reset();
@@ -69,6 +68,9 @@ public class Algorithm : MonoBehaviour
             else
                 ind.chromosomes.Add(Individuals[index2].chromosomes[0+i]);
         }
+        float mutate = Random.Range(0f, 1f);
+        if(mutate >= 0.01f)
+            Mutate(ind);
         return ind;
     }
 
@@ -103,8 +105,11 @@ public class Algorithm : MonoBehaviour
         }
         return secondBestIndex;
     }
-    void Mutate()
+    void Mutate(Individual i)
     {
-
+        for(int c = 0; c < i.chromosomes.Count; c++){
+            i.chromosomes[c] = Random.Range(1, 6);
+        }
+        Debug.Log("Mutated");
     }
 }
