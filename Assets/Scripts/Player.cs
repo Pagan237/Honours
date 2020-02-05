@@ -97,7 +97,6 @@ public class Player : MonoBehaviour
         {
             Projectile pro = proj.GetComponent<Projectile>();
             if(pro.ownerTag != gameObject.tag){
-                Debug.Log("Hit landed");
                 health--;
             }
         }
@@ -190,7 +189,7 @@ public class Player : MonoBehaviour
                 fitness += 3;
             else
                 fitness += 2;
-            if(timeSinceLastShot < 0 && !isReloading && !isHealing){
+            if(timeSinceLastShot < 0 && !isReloading && !isHealing && ammo > 0){
                 shooting.shot.target = enemyPos.position;
                 Instantiate(shooting.shot, shooting.playerPos.position, Quaternion.identity);
                 timeSinceLastShot = shooting.fireRate;

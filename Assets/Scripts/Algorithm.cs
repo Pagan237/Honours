@@ -9,9 +9,11 @@ public class Algorithm : MonoBehaviour
     public List<Individual> Individuals;
     private int generation;
     private int mutateFactor;
+    private int ID;
     // Start is called before the first frame update
     void Start()
     {
+        ID = 0;
         population = 10;
         activeIndex = 0;
         Individuals = new List<Individual>();
@@ -24,6 +26,9 @@ public class Algorithm : MonoBehaviour
                 int rand = Random.Range(1, 6);
                 individual.chromosomes.Add(rand);
             }
+            individual.ID = ID;
+            individual.generationEntry = generation;
+            ID++;
             Individuals.Add(individual);
         }
     }
@@ -34,13 +39,21 @@ public class Algorithm : MonoBehaviour
         Individuals[activeIndex].active = true;
         if(Individuals[activeIndex].player.timeAlive >= 30 || Individuals[activeIndex].player.dead == true){
             Individuals[activeIndex].fitness = Individuals[activeIndex].player.fitness;
-            Debug.Log("Fitness: " + Individuals[activeIndex].fitness);
+            Debug.Log("Individual: " +Individuals[activeIndex].ID + " Fitness: " + Individuals[activeIndex].fitness);
             Individuals[activeIndex].player.reset();
             Individuals[activeIndex].active = false;
             activeIndex++;
             if(activeIndex == population){
+                int averageFitness = 0;
+                for(int i = 0; i < population; i++){
+                    averageFitness += Individuals[i].fitness;
+                }
+                averageFitness = averageFitness/10;
+                Debug.Log("Average Fitness: " + averageFitness);
                 int bestIndex = SelectFittestParent();
-                int secondBest = SelectSecondFittestParent();
+                int secondBest = SelectSecondFittestParent(bestIndex);
+                Debug.Log("Fittest Individual: " + Individuals[bestIndex].ID + " Fitness: " + Individuals[bestIndex].fitness);
+                Debug.Log("Second fittest Individual: " + Individuals[secondBest].ID + " Fitness: " + Individuals[secondBest].fitness);
                 Individual individual = Crossover(bestIndex, secondBest);
                 int lowestFitness = 0;
                 int lowestFitnessIndex = 0;
@@ -52,8 +65,12 @@ public class Algorithm : MonoBehaviour
                 }
                 Destroy(Individuals[lowestFitnessIndex]);
                 Individuals.RemoveAt(lowestFitnessIndex);
+                individual.ID = ID;
+                ID++;
+                individual.generationEntry = generation + 1;
                 Individuals.Add(individual);
                 activeIndex = 0;
+                generation++;
             }
         }
     }
@@ -69,7 +86,7 @@ public class Algorithm : MonoBehaviour
                 ind.chromosomes.Add(Individuals[index2].chromosomes[0+i]);
         }
         float mutate = Random.Range(0f, 1f);
-        if(mutate >= 0.01f)
+        if(mutate >= 0.9f)
             Mutate(ind);
         return ind;
     }
@@ -89,16 +106,14 @@ public class Algorithm : MonoBehaviour
         return bestIndex;
     }
 
-    private int SelectSecondFittestParent()
+    private int SelectSecondFittestParent(int index)
     {
-        int highestFitness = 0;
+        //int highestFitness = 0;
         int secondBestIndex = 0;
         int secondHighestFitness = 0;
         for(int i = 0; i < population; i++)
         {
-            if(Individuals[i].fitness >= highestFitness)
-                highestFitness = Individuals[i].fitness;
-            if(Individuals[i].fitness < highestFitness && Individuals[i].fitness >= secondHighestFitness){
+            if(Individuals[i].fitness <= Individuals[index].fitness && Individuals[i].fitness > secondHighestFitness && i != index){
                 secondHighestFitness = Individuals[i].fitness;
                 secondBestIndex = i;
             }

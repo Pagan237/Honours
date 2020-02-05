@@ -9,6 +9,8 @@ public class Individual : MonoBehaviour
     public bool active;
     public List<int> chromosomes;
     private int state;
+    public int ID;
+    public int generationEntry;
     // Start is called before the first frame update
 
     private void Awake()
