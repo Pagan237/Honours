@@ -104,6 +104,9 @@ public class Enemy : MonoBehaviour
         if(TimeSinceReload < 0){
             reloading = false;
         }
+        if(TimeSpentHealing < 0){
+            isHealing = false;
+        }
         if(health <= 0){
             reset();
         }

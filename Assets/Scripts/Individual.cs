@@ -11,6 +11,11 @@ public class Individual : MonoBehaviour
     private int state;
     public int ID;
     public int generationEntry;
+    private enum states{
+        health = 1 << 0,
+        ammo = 1 << 1,
+        sight = 1 << 2
+    };
     // Start is called before the first frame update
 
     private void Awake()
@@ -26,22 +31,28 @@ public class Individual : MonoBehaviour
     {
         if (active == true)
         {
+            /* 
             if (player.health < 2 && player.ammo < 10 && player.inSight == true)
                 state = 0;
-            if (player.health < 2 && player.ammo < 10 && player.inSight == false)
+            else if (player.health < 2 && player.ammo < 10 && player.inSight == false)
                 state = 1;
-            if (player.health >= 2 && player.ammo < 10 && player.inSight == true)
+            else if (player.health >= 2 && player.ammo < 10 && player.inSight == true)
                 state = 2;
-            if (player.health >= 2 && player.ammo < 10 && player.inSight == false)
+            else if (player.health >= 2 && player.ammo < 10 && player.inSight == false)
                 state = 3;
-            if (player.health < 2 && player.ammo >= 10 && player.inSight == true)
+            else if (player.health < 2 && player.ammo >= 10 && player.inSight == true)
                 state = 4;
-            if (player.health < 2 && player.ammo >= 10 && player.inSight == false)
+            else if (player.health < 2 && player.ammo >= 10 && player.inSight == false)
                 state = 5;
-            if (player.health >= 2 && player.ammo >= 10 && player.inSight == true)
+            else if (player.health >= 2 && player.ammo >= 10 && player.inSight == true)
                 state = 6;
-            if (player.health >= 2 && player.ammo >= 10 && player.inSight == false)
+            else if (player.health >= 2 && player.ammo >= 10 && player.inSight == false)
                 state = 7;
+            */
+            int highHealth = player.health < 2 ? 0 : (int)states.health;
+            int highAmmo = player.ammo < 10 ? 0 : (int)states.ammo;
+            int sight = !player.inSight ? 0 : (int)states.sight;
+            state = highHealth + highAmmo + sight;
             action(chromosomes[state]);
         }
     }

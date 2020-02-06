@@ -16,9 +16,7 @@ public class EnemyPatrol : MonoBehaviour
     {
         for (int i = 0; i < 10; i++)
         {
-            float y = Random.Range(-5, 5);
-            float x = Random.Range(-10, 10);
-            moveSpots[i].position = new Vector2(x, y);
+            
         }
     }
 

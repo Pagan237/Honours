@@ -17,14 +17,14 @@ public class Player : MonoBehaviour
     private Shooting shooting;
     public int ammo;
     private float timeSinceLastShot;
-    private bool isReloading;
+    public bool isReloading;
     private float timeSinceReload;
     public float timeAlive;
     public float speed;
     public int health;
     private int maxHealth = 3;
     private float timeSpentHealing;
-    private bool isHealing;
+    public bool isHealing;
     private int randSpot;
     private Vector2 direction;
     private Vector2 spawnPoint;
@@ -50,6 +50,7 @@ public class Player : MonoBehaviour
         direction = Vector3.forward;
         spawnPoint = transform.position;
         enemyDirection = enemyPos.position - transform.position;
+        inSight = false;
     }
 
     // Update is called once per frame
@@ -70,25 +71,16 @@ public class Player : MonoBehaviour
         enemyDirection = enemyPos.position - transform.position;
         angle = Vector2.Angle(enemyDirection, direction);
         timeSinceLastShot -= Time.deltaTime;
-        
-        if(enemyDirection.x < 5 && enemyDirection.y < 5){
+        if(Vector2.Distance(enemyPos.position, transform.position) < 5){
             if(angle < fieldOfView/2 && angle != 0){
-                 inSight = true;      
-                 }
+                inSight = true;      
+            }
         }
+        else
+            inSight = false;
         if(health <= 0){
             dead = true;
         }
-        /*
-        if(health < 2 && health > 0 && !isHealing)
-            heal();
-        if(ammo == 0){
-            reload();
-        }
-        if(health <= 0){
-            reset();
-        }
-        */
     }
 
     void OnTriggerEnter2D(Collider2D proj)
@@ -179,9 +171,15 @@ public class Player : MonoBehaviour
         }
         randSpot = furthestIndex;
         transform.position = Vector2.MoveTowards(transform.position, patrol.moveSpots[randSpot].position, speed * Time.deltaTime);
+
     }
     public void Shoot(){
+        if (timeSinceLastShot > 0 || isReloading || isHealing || ammo <= 0 )
+        {
+            return;
+        }
         if(inSight){
+            shooting.shot.target = enemyPos.position;
             if(ammo > 10 && health > 2){
                 fitness += 5;
             }
@@ -189,18 +187,12 @@ public class Player : MonoBehaviour
                 fitness += 3;
             else
                 fitness += 2;
-            if(timeSinceLastShot < 0 && !isReloading && !isHealing && ammo > 0){
-                shooting.shot.target = enemyPos.position;
-                Instantiate(shooting.shot, shooting.playerPos.position, Quaternion.identity);
-                timeSinceLastShot = shooting.fireRate;
-                ammo--;
-            }
         }
         else{
             shooting.shot.target = patrol.moveSpots[randSpot].position;
-            Instantiate(shooting.shot, shooting.playerPos.position, Quaternion.identity);
-            timeSinceLastShot = shooting.fireRate;
-            ammo--;
         }    
+        Instantiate(shooting.shot, shooting.playerPos.position, Quaternion.identity);
+        timeSinceLastShot = shooting.fireRate;
+        ammo--;
     }
 }
