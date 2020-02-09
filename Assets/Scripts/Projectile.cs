@@ -12,11 +12,12 @@ public class Projectile : MonoBehaviour
     private Transform playerPos;
     public string ownerTag;
     public bool inView;
+    private Vector2 start;
 
     // Start is called before the first frame update
     void Start()
     {
-        //ownerTag = GameObject.FindGameObjectWithTag("Player").tag;
+        start = transform.position;
         playerPos = GameObject.FindGameObjectWithTag("Player").GetComponent<Transform>();
         enemyPos = GameObject.FindGameObjectWithTag("AI").GetComponent<Transform>();
         if(transform.position == enemyPos.position){
@@ -32,7 +33,17 @@ public class Projectile : MonoBehaviour
     {
         TimeAlive += Time.deltaTime;
         transform.position = Vector2.MoveTowards(transform.position, target, speed * Time.deltaTime);
-        if (Vector2.Distance(transform.position, target) < 0.1f || TimeAlive > 1)
+        if (Vector2.Distance(transform.position, target) < 0.1f){// || TimeAlive > 1)
+            if(start.x < target.x)
+                target.x = target.x - (start.x - target.x);
+            else
+                target.x = target.x - (start.x - target.x);
+            if(start.y < target.y)
+                target.y = target.y - (start.y - target.y);
+            else
+                target.y = target.y - (start.y - target.y);
+        }
+        if(TimeAlive > 1)
             Destroy(gameObject);
     }
 

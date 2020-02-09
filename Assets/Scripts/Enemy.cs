@@ -138,6 +138,10 @@ public class Enemy : MonoBehaviour
     }
 
     public void reset(){
+        GameObject[] projectiles = GameObject.FindGameObjectsWithTag("Projectile");
+        foreach(GameObject p in projectiles){
+            Destroy(p);
+        }
         transform.position = spawnPoint;
         health = 3;
         reloading = false;
