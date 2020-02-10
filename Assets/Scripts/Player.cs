@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
-    public int fitness;
+    public float fitness;
     public float fieldOfView = 70f;
     public bool inSight = false;
     private Rigidbody2D rb;
@@ -95,6 +95,7 @@ public class Player : MonoBehaviour
     }
 
     public void heal(){
+        gameObject.GetComponent<SpriteRenderer>().material.color = new Color(0, 1, 0, 1);
         if(!isHealing && !isReloading){
             if(!inSight){
                 if(health < 2)
@@ -125,6 +126,8 @@ public class Player : MonoBehaviour
     }
 
     public void reload(){
+        gameObject.GetComponent<SpriteRenderer>().material.color = new Color(0, 1, 1, 1);
+
         if(!isReloading && !isHealing)
         {
             if(!inSight){
@@ -133,6 +136,7 @@ public class Player : MonoBehaviour
                 else if(ammo> 10 && ammo < 30)
                     fitness += 2;
             }
+
             ammo = 30;
             isReloading = true;
             timeSinceReload = 2.0f;
@@ -140,20 +144,19 @@ public class Player : MonoBehaviour
     }
 
     public void Move(){
+        gameObject.GetComponent<SpriteRenderer>().material.color = new Color(0, 0, 1, 1);
         if(inSight){
                 transform.position = Vector2.MoveTowards(transform.position, enemyPos.position, speed * Time.deltaTime);
         }
-        else{
+        else
             transform.position = Vector2.MoveTowards(transform.position, patrol.moveSpots[randSpot].position, speed * Time.deltaTime);
-            if(ammo > 10 && health >= 2)
-                fitness += 5;
-            else if(ammo > 10 || health >= 2){
-                fitness += 2;
-            }
-        }
+        if(ammo > 10 && health > 2)
+            fitness += 0.75f;
     }
 
     public void Retreat(){
+        gameObject.GetComponent<SpriteRenderer>().material.color = new Color(1, 0, 1, 1);
+
         if(inSight){
             if(ammo < 10 && health < 2)
                 fitness += 5;
@@ -174,6 +177,8 @@ public class Player : MonoBehaviour
 
     }
     public void Shoot(){
+        gameObject.GetComponent<SpriteRenderer>().material.color = new Color(0, 0, 0, 1);
+
         if (timeSinceLastShot > 0 || isReloading || isHealing || ammo <= 0 )
         {
             return;

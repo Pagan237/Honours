@@ -5,7 +5,7 @@ using UnityEngine;
 public class Individual : MonoBehaviour
 {
     public Player player;
-    public int fitness;
+    public float fitness;
     public bool active;
     public List<int> chromosomes;
     private int state;
@@ -31,24 +31,6 @@ public class Individual : MonoBehaviour
     {
         if (active == true)
         {
-            /* 
-            if (player.health < 2 && player.ammo < 10 && player.inSight == true)
-                state = 0;
-            else if (player.health < 2 && player.ammo < 10 && player.inSight == false)
-                state = 1;
-            else if (player.health >= 2 && player.ammo < 10 && player.inSight == true)
-                state = 2;
-            else if (player.health >= 2 && player.ammo < 10 && player.inSight == false)
-                state = 3;
-            else if (player.health < 2 && player.ammo >= 10 && player.inSight == true)
-                state = 4;
-            else if (player.health < 2 && player.ammo >= 10 && player.inSight == false)
-                state = 5;
-            else if (player.health >= 2 && player.ammo >= 10 && player.inSight == true)
-                state = 6;
-            else if (player.health >= 2 && player.ammo >= 10 && player.inSight == false)
-                state = 7;
-            */
             int highHealth = player.health < 2 ? 0 : (int)states.health;
             int highAmmo = player.ammo < 10 ? 0 : (int)states.ammo;
             int sight = !player.inSight ? 0 : (int)states.sight;
