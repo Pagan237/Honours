@@ -13,6 +13,7 @@ public class Algorithm : MonoBehaviour
     private int ID;
     public Text gen;
     public Text fit;
+    public Text state;
     // Start is called before the first frame update
     void Start()
     {
@@ -24,7 +25,7 @@ public class Algorithm : MonoBehaviour
         for (int i = 0; i < population; i++)
         {
             Individual individual = gameObject.AddComponent(typeof(Individual)) as Individual;
-            for (int c = 0; c < 8; c++)
+            for (int c = 0; c < 15; c++)
             {
                 int rand = Random.Range(1, 6);
                 individual.chromosomes.Add(rand);
@@ -42,6 +43,7 @@ public class Algorithm : MonoBehaviour
         float round = (float) System.Math.Round(Individuals[activeIndex].player.fitness, 1);
         fit.text = "Individual Fitness: " + round;
         gen.text = "Generation: " + generation;
+        state.text = "State: " + Individuals[activeIndex].state;
         Individuals[activeIndex].active = true;
         if(Individuals[activeIndex].player.timeAlive >= 30 || Individuals[activeIndex].player.dead == true){
             Individuals[activeIndex].fitness = Individuals[activeIndex].player.fitness;
@@ -66,9 +68,8 @@ public class Algorithm : MonoBehaviour
                 Debug.Log("Parent Two: " + Individuals[parentTwoIndex].ID + " Fitness: " + Individuals[parentTwoIndex].fitness);
                 */
                 // ******************************* TOURNAMENT SELECTION STRATEGY **************************
-                int parentOneIndex = 0;
-                int parentTwoIndex = 0;
-                Tournament(parentOneIndex, parentTwoIndex);
+                int parentOneIndex = Tournament(1);
+                int parentTwoIndex = Tournament(2);
                 Debug.Log("Parent One: " + Individuals[parentOneIndex].ID + " Fitness: " + Individuals[parentOneIndex].fitness);
                 Debug.Log("Parent Two: " + Individuals[parentTwoIndex].ID + " Fitness: " + Individuals[parentTwoIndex].fitness);
                 // *************************************************************************************************
@@ -78,7 +79,8 @@ public class Algorithm : MonoBehaviour
                 //**********************************************************************************************
                 //**********************************ONE POINT CROSSOVER*****************************************
                 Individual individual = onePointCrossover(parentOneIndex, parentTwoIndex);
-                //Find and remove least fit individual from population
+                //Find and remove weakest individual from population
+                
                 float lowestFitness = 0;
                 int lowestFitnessIndex = 0;
                 for(int i = 0; i < Individuals.Count; i++){
@@ -103,13 +105,13 @@ public class Algorithm : MonoBehaviour
     private Individual uniformCrossover(int index1, int index2)
     {
         Individual ind = gameObject.AddComponent(typeof(Individual)) as Individual;
-        for(int i = 0; i < 8; i++){
+        for(int c = 0; c < 15; c++){
             //Choose gene from parent depending on rng
             float rand = Random.Range(0f, 1f);
             if(rand > 0.5)
-                ind.chromosomes.Add(Individuals[index1].chromosomes[i]);
+                ind.chromosomes.Add(Individuals[index1].chromosomes[c]);
             else
-                ind.chromosomes.Add(Individuals[index2].chromosomes[i]);
+                ind.chromosomes.Add(Individuals[index2].chromosomes[c]);
         }
         // 1/10 chance of mutation, causing all genes to change
         float mutate = Random.Range(0f, 1f);
@@ -120,8 +122,8 @@ public class Algorithm : MonoBehaviour
 
     private Individual onePointCrossover(int index1, int index2){
         Individual ind = gameObject.AddComponent(typeof(Individual)) as Individual;
-        int rand = Random.Range(0, 8);
-        for(int c = 0; c < 8; c++){
+        int rand = Random.Range(0, 15);
+        for(int c = 0; c < 15; c++){
             if(c < rand)
                 ind.chromosomes.Add(Individuals[index1].chromosomes[c]);
             else
@@ -159,20 +161,25 @@ public class Algorithm : MonoBehaviour
         return secondBestIndex;
     }
 
-    void Tournament(int parentOneIndex, int parentTwoIndex){
-        float parentFitness1 = 0;
-        float parentFitness2 = 0;
+    int Tournament(int parent){
+        float parentFitness = 0;
+        int index = 0;
         for(int i = 0; i < population/2; i++){
-            if(Individuals[i].fitness > parentFitness1){
-                parentFitness1 = Individuals[i].fitness;
-                parentOneIndex = i;
+            if(parent == 1){
+                if(parentFitness < Individuals[i].fitness){
+                    index = i;
+                    parentFitness = Individuals[i].fitness;
+                }
             }
-            if(Individuals[i+(population/2)].fitness > parentFitness2){
-                parentFitness2 = Individuals[i+(population/2)].fitness;
-                parentTwoIndex = i+(population/2);
+            else
+            {
+                if(parentFitness < Individuals[i +(population/2)].fitness){
+                    index = i+(population/2);
+                    parentFitness = Individuals[i +(population/2)].fitness;
+                }
             }
         }
-        
+        return index;
     }
 
     void Mutate(Individual i)

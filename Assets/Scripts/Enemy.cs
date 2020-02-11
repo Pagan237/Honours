@@ -74,14 +74,12 @@ public class Enemy : MonoBehaviour
         Vector2 playerDirection = playerpos.position - transform.position;
         //Angle between direction of player and direction AI is travelling
         float angle = Vector2.Angle(playerDirection, direction);
-        if(playerDirection.x < 5 && playerDirection.y < 5){
+        if(Vector2.Distance(playerpos.position, transform.position) < 5){
             if(angle < fov/2 && angle != 0)
             {
                 //If angle is less than field of view and player isn't too far away
-                transform.position = Vector2.MoveTowards(transform.position, playerpos.position, speed * Time.deltaTime);
                 if(TimeSinceLastShot < 0 && !reloading && ammo > 0 && !isHealing){
                     //If AI isn't reloading, shoot at player
-                    //ES.shot.target = playerpos.position;
                     Instantiate(ES.shot, ES.AIpos.position, Quaternion.identity);
                     TimeSinceLastShot = ES.StartTimeBetweenShots;
                     ammo--;

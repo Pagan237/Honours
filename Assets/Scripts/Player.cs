@@ -21,6 +21,7 @@ public class Player : MonoBehaviour
     private float timeSinceReload;
     public float timeAlive;
     public float speed;
+    public float lastHit;
     public int health;
     private int maxHealth = 3;
     private float timeSpentHealing;
@@ -33,6 +34,7 @@ public class Player : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        lastHit = 2;
         fitness = 0;
         isReloading = false;
         timeSpentHealing = 0;
@@ -56,6 +58,7 @@ public class Player : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        lastHit += Time.deltaTime;
         timeAlive += Time.deltaTime;
         timeSpentHealing -= Time.deltaTime;
         if(timeSpentHealing < 0)
@@ -90,28 +93,12 @@ public class Player : MonoBehaviour
             Projectile pro = proj.GetComponent<Projectile>();
             if(pro.ownerTag != gameObject.tag){
                 health--;
+                lastHit = 0;
             }
         }
     }
 
-    public void heal(){
-        gameObject.GetComponent<SpriteRenderer>().material.color = new Color(0, 1, 0, 1);
-        if(!isHealing && !isReloading){
-            if(!inSight){
-                if(health < 2)
-                    fitness += 5;
-                else if(health == 2)
-                    fitness += 3;
-            }
-            health++;
-            timeSpentHealing = 2f;
-            isHealing = true;
-            if (health > maxHealth)
-                health = maxHealth;
-        }
-    }
-    
-    public void reset(){
+        public void reset(){
         isReloading = false;
         timeSpentHealing = 0;
         isHealing = false;
@@ -123,17 +110,41 @@ public class Player : MonoBehaviour
         fitness = 0;
         enemy.reset();
         dead = false;
+        lastHit = 2;
     }
+
+    public void heal(){
+        if(health == maxHealth || lastHit < 2){
+            fitness -= 0.5f;
+        }
+        gameObject.GetComponent<SpriteRenderer>().material.color = new Color(0, 1, 0, 1);
+        if(!isHealing && !isReloading){
+            if(!inSight){
+                if(health < 2 && lastHit > 2)
+                    fitness += 5;
+                else if(health == 2 && lastHit > 2)
+                    fitness += 3;
+            }
+            health++;
+            timeSpentHealing = 2f;
+            isHealing = true;
+            if (health > maxHealth)
+                health = maxHealth;
+        }
+    }
+    
 
     public void reload(){
         gameObject.GetComponent<SpriteRenderer>().material.color = new Color(0, 1, 1, 1);
-
+        if(ammo == 30 || lastHit < 2){
+            fitness -= 0.5f;
+        }
         if(!isReloading && !isHealing)
         {
             if(!inSight){
-                if(ammo < 10)
+                if(ammo < 10 && lastHit > 2)
                     fitness += 5;
-                else if(ammo> 10 && ammo < 30)
+                else if(ammo> 10 && ammo < 30 && lastHit > 2)
                     fitness += 2;
             }
 
@@ -150,18 +161,17 @@ public class Player : MonoBehaviour
         }
         else
             transform.position = Vector2.MoveTowards(transform.position, patrol.moveSpots[randSpot].position, speed * Time.deltaTime);
-        if(ammo > 10 && health > 2)
+        if(ammo > 10 && health > 2 && !inSight)
             fitness += 0.75f;
     }
 
     public void Retreat(){
         gameObject.GetComponent<SpriteRenderer>().material.color = new Color(1, 0, 1, 1);
-
-        if(inSight){
-            if(ammo < 10 && health < 2)
-                fitness += 5;
-            else if (ammo < 10 || health < 2)
-                fitness += 3;
+        if(lastHit < 2 && !inSight){
+            fitness += 2.5f;
+        }
+        else if(lastHit< 2){
+            fitness += 1.25f;
         }
         int furthestIndex = 0;
         float furthestDistance = 0;

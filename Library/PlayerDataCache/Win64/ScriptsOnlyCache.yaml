@@ -1,6 +1,7 @@
 ScriptsOnlyBuild:
   usedScripts:
     Assembly-CSharp.dll:
+    - Algorithm
     - Enemy
     - EnemyPatrol
     - EnemyShooting
@@ -10,6 +11,12 @@ ScriptsOnlyBuild:
     - Shooting
     UnityEditor.TestRunner.dll:
     - UnityEditor.TestTools.TestRunner.TestListCacheData
+    UnityEngine.UI.dll:
+    - UnityEngine.EventSystems.EventSystem
+    - UnityEngine.EventSystems.StandaloneInputModule
+    - UnityEngine.UI.CanvasScaler
+    - UnityEngine.UI.GraphicRaycaster
+    - UnityEngine.UI.Text
   sceneClasses:
     Assets/Scenes/SampleScene.unity:
     - Class: 1
@@ -35,26 +42,46 @@ ScriptsOnlyBuild:
     - Class: 104
       Script: {instanceID: 0}
     - Class: 114
-      Script: {instanceID: 9402}
+      Script: {instanceID: 9326}
     - Class: 114
-      Script: {instanceID: 9762}
+      Script: {instanceID: 9332}
     - Class: 114
-      Script: {instanceID: 9834}
+      Script: {instanceID: 9338}
     - Class: 114
-      Script: {instanceID: 9910}
+      Script: {instanceID: 9382}
     - Class: 114
-      Script: {instanceID: 10034}
+      Script: {instanceID: 9384}
     - Class: 114
-      Script: {instanceID: 10170}
+      Script: {instanceID: 9404}
     - Class: 114
-      Script: {instanceID: 10510}
+      Script: {instanceID: 9764}
+    - Class: 114
+      Script: {instanceID: 9836}
+    - Class: 114
+      Script: {instanceID: 9912}
+    - Class: 114
+      Script: {instanceID: 10036}
+    - Class: 114
+      Script: {instanceID: 10172}
+    - Class: 114
+      Script: {instanceID: 10178}
+    - Class: 114
+      Script: {instanceID: 10514}
     - Class: 115
+      Script: {instanceID: 0}
+    - Class: 128
       Script: {instanceID: 0}
     - Class: 157
       Script: {instanceID: 0}
     - Class: 212
       Script: {instanceID: 0}
     - Class: 213
+      Script: {instanceID: 0}
+    - Class: 222
+      Script: {instanceID: 0}
+    - Class: 223
+      Script: {instanceID: 0}
+    - Class: 224
       Script: {instanceID: 0}
   scriptHashData:
   - hash:
@@ -93,6 +120,12 @@ ScriptsOnlyBuild:
     assemblyName: Unity.Timeline.dll
     namespaceName: UnityEngine.Timeline
     className: ActivationTrack
+  - hash:
+      serializedVersion: 2
+      Hash: 86044cc5bd712c2a48f3352c6060b63c
+    assemblyName: Assembly-CSharp.dll
+    namespaceName: 
+    className: Individual
   - hash:
       serializedVersion: 2
       Hash: cf9f5cf2c3145a37ac07f00e50e460f9
@@ -563,7 +596,7 @@ ScriptsOnlyBuild:
     className: TMP_Asset
   - hash:
       serializedVersion: 2
-      Hash: de35fb9047823b37135e7e4bec21d38b
+      Hash: 683d9756e48f594d13ef36331daa7339
     assemblyName: Assembly-CSharp.dll
     namespaceName: 
     className: Player
@@ -587,7 +620,7 @@ ScriptsOnlyBuild:
     className: TMP_SpriteAnimator
   - hash:
       serializedVersion: 2
-      Hash: b39341441274c8790655d6f373f5d385
+      Hash: 1c1ed8ca169f572a822cdf11dba4b54e
     assemblyName: Assembly-CSharp.dll
     namespaceName: 
     className: Projectile
@@ -675,6 +708,12 @@ ScriptsOnlyBuild:
     assemblyName: Assembly-CSharp.dll
     namespaceName: 
     className: Enemy
+  - hash:
+      serializedVersion: 2
+      Hash: 7e1bbc72bfe1155ba888b693469495e9
+    assemblyName: Assembly-CSharp.dll
+    namespaceName: 
+    className: Algorithm
   - hash:
       serializedVersion: 2
       Hash: ee0cef6caaac8ae485bfa82f000f0f7b

@@ -8,13 +8,14 @@ public class Individual : MonoBehaviour
     public float fitness;
     public bool active;
     public List<int> chromosomes;
-    private int state;
+    public int state;
     public int ID;
     public int generationEntry;
     private enum states{
         health = 1 << 0,
         ammo = 1 << 1,
-        sight = 1 << 2
+        sight = 1 << 2,
+        lastHit = 1 << 3
     };
     // Start is called before the first frame update
 
@@ -34,8 +35,9 @@ public class Individual : MonoBehaviour
             int highHealth = player.health < 2 ? 0 : (int)states.health;
             int highAmmo = player.ammo < 10 ? 0 : (int)states.ammo;
             int sight = !player.inSight ? 0 : (int)states.sight;
-            state = highHealth + highAmmo + sight;
-            action(chromosomes[state]);
+            int lastHit = player.lastHit < 2 ? 0 : (int)states.lastHit;
+            state = highHealth + highAmmo + sight + lastHit;
+            action(chromosomes[state-1]);
         }
     }
 

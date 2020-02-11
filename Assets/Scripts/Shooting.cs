@@ -13,7 +13,7 @@ public class Shooting : MonoBehaviour
     void Start()
     {
         playerPos = GetComponent<Transform>();
-        fireRate = 0.1f;
+        fireRate = 0.25f;
         shot.inView = inView;
     }
 

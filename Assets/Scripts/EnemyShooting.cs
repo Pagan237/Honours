@@ -15,7 +15,7 @@ public class EnemyShooting : MonoBehaviour
     void Start()
     {
         AIpos = GetComponent<Transform>();  
-        StartTimeBetweenShots = 0.1f;
+        StartTimeBetweenShots = 0.25f;
     }
 
     // Update is called once per frame
