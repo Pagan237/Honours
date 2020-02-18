@@ -111,6 +111,7 @@ public class Player : MonoBehaviour
         enemy.reset();
         dead = false;
         lastHit = 2;
+        randSpot = Random.Range(0, 9);
     }
 
     public void heal(){

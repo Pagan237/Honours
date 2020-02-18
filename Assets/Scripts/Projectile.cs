@@ -33,7 +33,7 @@ public class Projectile : MonoBehaviour
     {
         TimeAlive += Time.deltaTime;
         transform.position = Vector2.MoveTowards(transform.position, target, speed * Time.deltaTime);
-        if (Vector2.Distance(transform.position, target) < 0.1f){// || TimeAlive > 1)
+        if (Vector2.Distance(transform.position, target) < 0.1f){
             if(start.x < target.x)
                 target.x = target.x - (start.x - target.x);
             else

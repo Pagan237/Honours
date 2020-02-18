@@ -6,8 +6,6 @@ public class Enemy : MonoBehaviour
 {
     
     public float fov = 70f; // field of view
-    public bool inSight = false; //is player visible
-    public Vector2 PLS; //Position player was last seen
     public int ammo;
     public bool reloading; 
     private float TimeSinceLastShot;
