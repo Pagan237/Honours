@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Enemy : MonoBehaviour
 {
-    
+    public bool resetting = false;
     public float fov = 70f; // field of view
     public int ammo;
     public bool reloading; 
@@ -25,6 +25,7 @@ public class Enemy : MonoBehaviour
     private Vector3 startPos; //Position of AI when beginning to travel to new spot
     private int randSpot;
     private Vector2 spawnPoint;
+    public bool dead = false;
 
     // Start is called before the first frame update
     void Start()
@@ -45,6 +46,7 @@ public class Enemy : MonoBehaviour
     
     void Update()
     {
+        resetting = false;
         TimeSpentHealing -= Time.deltaTime;
         if(TimeSpentHealing <= 0)
             isHealing = false;
@@ -104,7 +106,8 @@ public class Enemy : MonoBehaviour
             isHealing = false;
         }
         if(health <= 0){
-            reset();
+            player.fitness += 100 - (player.timeAlive*2);
+            dead = true;
         }
     }
 
@@ -134,6 +137,9 @@ public class Enemy : MonoBehaviour
     }
 
     public void reset(){
+        resetting = true;
+        if(!player.resetting)
+            player.reset();
         GameObject[] projectiles = GameObject.FindGameObjectsWithTag("Projectile");
         foreach(GameObject p in projectiles){
             Destroy(p);

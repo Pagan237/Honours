@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
+    public bool resetting = false;
     public float fitness;
     public float fieldOfView = 70f;
     public bool inSight = false;
@@ -13,7 +14,7 @@ public class Player : MonoBehaviour
     private Transform enemyPos;
     private Vector2 enemyDirection;
     private float angle;
-    private Enemy enemy;
+    public Enemy enemy;
     private Shooting shooting;
     public int ammo;
     private float timeSinceLastShot;
@@ -58,6 +59,7 @@ public class Player : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        resetting = false;
         lastHit += Time.deltaTime;
         timeAlive += Time.deltaTime;
         timeSpentHealing -= Time.deltaTime;
@@ -84,6 +86,7 @@ public class Player : MonoBehaviour
         if(health <= 0){
             dead = true;
         }
+
     }
 
     void OnTriggerEnter2D(Collider2D proj)
@@ -98,7 +101,8 @@ public class Player : MonoBehaviour
         }
     }
 
-        public void reset(){
+    public void reset(){
+        resetting = true;
         isReloading = false;
         timeSpentHealing = 0;
         isHealing = false;
@@ -108,14 +112,15 @@ public class Player : MonoBehaviour
         timeAlive = 0;
         transform.position = spawnPoint;
         fitness = 0;
-        enemy.reset();
+        if(!enemy.resetting)
+            enemy.reset();
         dead = false;
         lastHit = 2;
         randSpot = Random.Range(0, 9);
     }
 
     public void heal(){
-        if(health == maxHealth || lastHit < 2){
+        if(health == maxHealth || lastHit < 2 || inSight){
             fitness -= 0.5f;
         }
         gameObject.GetComponent<SpriteRenderer>().material.color = new Color(0, 1, 0, 1);
@@ -137,7 +142,7 @@ public class Player : MonoBehaviour
 
     public void reload(){
         gameObject.GetComponent<SpriteRenderer>().material.color = new Color(0, 1, 1, 1);
-        if(ammo == 30 || lastHit < 2){
+        if(ammo == 30 || lastHit < 2 || inSight){
             fitness -= 0.5f;
         }
         if(!isReloading && !isHealing)
@@ -148,7 +153,6 @@ public class Player : MonoBehaviour
                 else if(ammo> 10 && ammo < 30 && lastHit > 2)
                     fitness += 2;
             }
-
             ammo = 30;
             isReloading = true;
             timeSinceReload = 2.0f;
@@ -163,21 +167,29 @@ public class Player : MonoBehaviour
         else
             transform.position = Vector2.MoveTowards(transform.position, patrol.moveSpots[randSpot].position, speed * Time.deltaTime);
         if(ammo > 10 && health > 2 && !inSight)
-            fitness += 0.75f;
+            fitness += 0.1f;
+        else if ((ammo > 10 || health > 2) && !inSight)
+            fitness += 0.05f;
     }
 
     public void Retreat(){
+        if(lastHit < 2 && health < 2 && ammo < 10)
+            fitness += 0.1f;
+        else if(lastHit < 2 && (health <= 2 || ammo < 10))
+            fitness += 0.05f;
+        else if (lastHit < 2)
+            fitness += 0.025f;
+        else if(health > 2 && ammo > 10 && lastHit > 2)
+            fitness -= 0.1f; 
+        float dist = 0;
         gameObject.GetComponent<SpriteRenderer>().material.color = new Color(1, 0, 1, 1);
-        if(lastHit < 2 && !inSight){
-            fitness += 2.5f;
-        }
-        else if(lastHit< 2){
-            fitness += 1.25f;
-        }
         int furthestIndex = 0;
         float furthestDistance = 0;
         for (int i = 0; i < patrol.moveSpots.Count; i++){
-            float dist = Vector2.Distance(patrol.moveSpots[i].position, enemyPos.position);
+            if(!inSight)
+                dist = Vector2.Distance(patrol.moveSpots[i].position, transform.position);
+            else
+                dist = Vector2.Distance(patrol.moveSpots[i].position, enemyPos.position);
             if(dist > furthestDistance){
                 furthestDistance = dist;
                 furthestIndex = i;
@@ -185,27 +197,24 @@ public class Player : MonoBehaviour
         }
         randSpot = furthestIndex;
         transform.position = Vector2.MoveTowards(transform.position, patrol.moveSpots[randSpot].position, speed * Time.deltaTime);
-
     }
     public void Shoot(){
         gameObject.GetComponent<SpriteRenderer>().material.color = new Color(0, 0, 0, 1);
-
         if (timeSinceLastShot > 0 || isReloading || isHealing || ammo <= 0 )
         {
             return;
         }
         if(inSight){
             shooting.shot.target = enemyPos.position;
-            if(ammo > 10 && health > 2){
+            if (ammo > 0){
                 fitness += 5;
             }
-            else if (ammo > 10 || health > 2)
-                fitness += 3;
             else
-                fitness += 2;
+                fitness -= 5;
         }
         else{
             shooting.shot.target = patrol.moveSpots[randSpot].position;
+            fitness -= 5;
         }    
         Instantiate(shooting.shot, shooting.playerPos.position, Quaternion.identity);
         timeSinceLastShot = shooting.fireRate;
