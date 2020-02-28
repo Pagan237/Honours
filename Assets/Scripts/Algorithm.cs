@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using System.Text;
+using System.IO;
 
 public class Algorithm : MonoBehaviour
 {
@@ -14,9 +16,11 @@ public class Algorithm : MonoBehaviour
     public Text gen;
     public Text fit;
     public Text state;
+    private string filepath;
     // Start is called before the first frame update
     void Start()
     {
+        filepath = "results.csv";
         ID = 0;
         population = 10;
         activeIndex = 0;
@@ -45,7 +49,7 @@ public class Algorithm : MonoBehaviour
         gen.text = "Generation: " + generation;
         state.text = "State: " + Individuals[activeIndex].state;
         Individuals[activeIndex].active = true;
-        if(Individuals[activeIndex].player.timeAlive >= 30 || Individuals[activeIndex].player.dead || Individuals[activeIndex].player.enemy.dead){
+        if(Individuals[activeIndex].player.timeAlive >= 0.1 || Individuals[activeIndex].player.dead || Individuals[activeIndex].player.enemy.dead){
             Individuals[activeIndex].fitness = Individuals[activeIndex].player.fitness;
             Debug.Log("Individual: " +Individuals[activeIndex].ID + " Fitness: " + Individuals[activeIndex].fitness);
             Individuals[activeIndex].player.reset();
@@ -88,6 +92,13 @@ public class Algorithm : MonoBehaviour
                         lowestFitnessIndex = i;
                         lowestFitness = Individuals[i].fitness;
                     }
+                }
+                using(TextWriter sw = File.AppendText(filepath)){
+                    string g = generation.ToString();
+                    string avg = averageFitness.ToString("F2");
+                    string best = Individuals[SelectFittestParent()].fitness.ToString("F2");
+                    sw.WriteLine("{0},{1},{2}", g, avg, best);
+                    sw.NewLine = "\n";
                 }
                 Destroy(Individuals[lowestFitnessIndex]);
                 Individuals.RemoveAt(lowestFitnessIndex);
