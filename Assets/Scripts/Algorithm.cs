@@ -17,9 +17,12 @@ public class Algorithm : MonoBehaviour
     public Text fit;
     public Text state;
     private string filepath;
+    private List<int> record = new List<int>();
+    private float averageSurvivalTime;
     // Start is called before the first frame update
     void Start()
     {
+        averageSurvivalTime = 0;
         filepath = "results.csv";
         ID = 0;
         population = 10;
@@ -39,6 +42,8 @@ public class Algorithm : MonoBehaviour
             ID++;
             Individuals.Add(individual);
         }
+        for(int i = 0; i < 3; i++)
+            record.Add(0);
     }
 
     // Update is called once per frame
@@ -50,6 +55,16 @@ public class Algorithm : MonoBehaviour
         state.text = "State: " + Individuals[activeIndex].state;
         Individuals[activeIndex].active = true;
         if(Individuals[activeIndex].player.timeAlive >= 0.1 || Individuals[activeIndex].player.dead || Individuals[activeIndex].player.enemy.dead){
+            if(Individuals[activeIndex].player.timeAlive >= 0.1){
+                record[1]++;
+            }
+            else if(Individuals[activeIndex].player.dead){
+                record[2]++;
+            }
+            else{
+                record[0]++;
+            }
+            averageSurvivalTime += Individuals[activeIndex].player.timeAlive;
             Individuals[activeIndex].fitness = Individuals[activeIndex].player.fitness;
             Debug.Log("Individual: " +Individuals[activeIndex].ID + " Fitness: " + Individuals[activeIndex].fitness);
             Individuals[activeIndex].player.reset();
@@ -63,6 +78,7 @@ public class Algorithm : MonoBehaviour
                     averageFitness += Individuals[i].fitness;
                 }
                 averageFitness = averageFitness/10;
+                averageSurvivalTime = averageSurvivalTime/10;
                 Debug.Log("Average Fitness: " + averageFitness);
                 /* ****************** SELECT TWO FITTEST PARENTS STRATEGY ****************
                 int parentOneIndex = SelectFittestParent();
@@ -94,12 +110,17 @@ public class Algorithm : MonoBehaviour
                     }
                 }
                 using(TextWriter sw = File.AppendText(filepath)){
+                    string ratio = record[0].ToString() + " - " + record[1].ToString() + " - " + record[2].ToString();
+                    string survival = averageSurvivalTime.ToString("F2");
                     string g = generation.ToString();
                     string avg = averageFitness.ToString("F2");
                     string best = Individuals[SelectFittestParent()].fitness.ToString("F2");
-                    sw.WriteLine("{0},{1},{2}", g, avg, best);
+                    sw.WriteLine("{0},{1},{2},{3},{4}", g, avg, best, survival, ratio);
                     sw.NewLine = "\n";
                 }
+                averageSurvivalTime = 0;
+                for(int i = 0; i < record.Count; i++)
+                    record[i] = 0;
                 Destroy(Individuals[lowestFitnessIndex]);
                 Individuals.RemoveAt(lowestFitnessIndex);
                 //Add new individual to population and move to next generation
