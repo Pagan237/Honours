@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
-    public bool resetting = false;
     public float fitness;
     public float fieldOfView = 70f;
     public bool inSight = false;
@@ -59,7 +58,6 @@ public class Player : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        resetting = false;
         lastHit += Time.deltaTime;
         timeAlive += Time.deltaTime;
         timeSpentHealing -= Time.deltaTime;
@@ -102,7 +100,6 @@ public class Player : MonoBehaviour
     }
 
     public void reset(){
-        resetting = true;
         isReloading = false;
         timeSpentHealing = 0;
         isHealing = false;
@@ -112,8 +109,7 @@ public class Player : MonoBehaviour
         timeAlive = 0;
         transform.position = spawnPoint;
         fitness = 0;
-        if(!enemy.resetting)
-            enemy.reset();
+        enemy.reset();
         dead = false;
         lastHit = 2;
         randSpot = Random.Range(0, 9);

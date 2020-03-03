@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class Enemy : MonoBehaviour
 {
-    public bool resetting = false;
     public float fov = 70f; // field of view
     public int ammo;
     public bool reloading; 
@@ -46,7 +45,6 @@ public class Enemy : MonoBehaviour
     
     void Update()
     {
-        resetting = false;
         TimeSpentHealing -= Time.deltaTime;
         if(TimeSpentHealing <= 0)
             isHealing = false;
@@ -137,9 +135,6 @@ public class Enemy : MonoBehaviour
     }
 
     public void reset(){
-        resetting = true;
-        if(!player.resetting)
-            player.reset();
         GameObject[] projectiles = GameObject.FindGameObjectsWithTag("Projectile");
         foreach(GameObject p in projectiles){
             Destroy(p);

@@ -54,8 +54,8 @@ public class Algorithm : MonoBehaviour
         gen.text = "Generation: " + generation;
         state.text = "State: " + Individuals[activeIndex].state;
         Individuals[activeIndex].active = true;
-        if(Individuals[activeIndex].player.timeAlive >= 0.1 || Individuals[activeIndex].player.dead || Individuals[activeIndex].player.enemy.dead){
-            if(Individuals[activeIndex].player.timeAlive >= 0.1){
+        if(Individuals[activeIndex].player.timeAlive >= 30 || Individuals[activeIndex].player.dead || Individuals[activeIndex].player.enemy.dead){
+            if(Individuals[activeIndex].player.timeAlive >= 30){
                 record[1]++;
             }
             else if(Individuals[activeIndex].player.dead){
@@ -77,8 +77,8 @@ public class Algorithm : MonoBehaviour
                 for(int i = 0; i < population; i++){
                     averageFitness += Individuals[i].fitness;
                 }
-                averageFitness = averageFitness/10;
-                averageSurvivalTime = averageSurvivalTime/10;
+                averageFitness = averageFitness/population;
+                averageSurvivalTime = averageSurvivalTime/population;
                 Debug.Log("Average Fitness: " + averageFitness);
                 /* ****************** SELECT TWO FITTEST PARENTS STRATEGY ****************
                 int parentOneIndex = SelectFittestParent();
@@ -161,6 +161,9 @@ public class Algorithm : MonoBehaviour
             else
                 ind.chromosomes.Add(Individuals[index2].chromosomes[c]);
         }
+        float mutate = Random.Range(0f, 1f);
+        if(mutate >= 0.9f)
+            Mutate(ind);
         return ind;
     }
 
