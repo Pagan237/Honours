@@ -70,7 +70,6 @@ public class Algorithm : MonoBehaviour
         if(Input.GetKeyDown("down") && mutateFactor > 0.01f)
             mutateFactor = mutateFactor - 0.01f;
         float round = (float) System.Math.Round(Individuals[activeIndex].player.fitness, 1);
-        Debug.Log(selection + " - " + crossover);
         mutate.text = "Mutation rate: " + System.Math.Round(mutateFactor, 2);
         cross.text = crossover;
         select.text = selection;

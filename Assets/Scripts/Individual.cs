@@ -37,7 +37,7 @@ public class Individual : MonoBehaviour
             int sight = !player.inSight ? 0 : (int)states.sight;
             int lastHit = player.lastHit < 2 ? 0 : (int)states.lastHit;
             state = highHealth + highAmmo + sight + lastHit;
-            action(chromosomes[state - 1]);
+            action(chromosomes[state]);
         }
     }
 
