@@ -7,21 +7,29 @@ using System.IO;
 
 public class Algorithm : MonoBehaviour
 {
+    private string selection;
+    private string crossover;
     private int population;
     private int activeIndex;
     public List<Individual> Individuals;
     private int generation;
-    private int mutateFactor;
+    private float mutateFactor;
     private int ID;
     public Text gen;
     public Text fit;
     public Text state;
+    public Text cross;
+    public Text select;
+    public Text mutate;
     private string filepath;
     private List<int> record = new List<int>();
     private float averageSurvivalTime;
     // Start is called before the first frame update
     void Start()
     {
+        selection = "tournament";
+        crossover = "uniform";
+        mutateFactor = 0.9f;
         averageSurvivalTime = 0;
         filepath = "results.csv";
         ID = 0;
@@ -32,7 +40,7 @@ public class Algorithm : MonoBehaviour
         for (int i = 0; i < population; i++)
         {
             Individual individual = gameObject.AddComponent(typeof(Individual)) as Individual;
-            for (int c = 0; c < 15; c++)
+            for (int c = 0; c < 16; c++)
             {
                 int rand = Random.Range(1, 6);
                 individual.chromosomes.Add(rand);
@@ -49,7 +57,23 @@ public class Algorithm : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (Input.GetKeyDown("t"))
+            selection = "tournament";
+        if(Input.GetKeyDown("f"))
+            selection = "fittest";
+        if(Input.GetKeyDown("u"))
+            crossover = "uniform";
+        if(Input.GetKeyDown("o"))
+            crossover = "single point";
+        if(Input.GetKeyDown("up") && mutateFactor < 0.99f)
+            mutateFactor = mutateFactor + 0.01f;
+        if(Input.GetKeyDown("down") && mutateFactor > 0.01f)
+            mutateFactor = mutateFactor - 0.01f;
         float round = (float) System.Math.Round(Individuals[activeIndex].player.fitness, 1);
+        Debug.Log(selection + " - " + crossover);
+        mutate.text = "Mutation rate: " + System.Math.Round(mutateFactor, 2);
+        cross.text = crossover;
+        select.text = selection;
         fit.text = "Individual Fitness: " + round;
         gen.text = "Generation: " + generation;
         state.text = "State: " + Individuals[activeIndex].state;
@@ -80,25 +104,28 @@ public class Algorithm : MonoBehaviour
                 averageFitness = averageFitness/population;
                 averageSurvivalTime = averageSurvivalTime/population;
                 Debug.Log("Average Fitness: " + averageFitness);
-                /* ****************** SELECT TWO FITTEST PARENTS STRATEGY ****************
-                int parentOneIndex = SelectFittestParent();
-                int parentTwoIndex = SelectSecondFittestParent(parentOneIndex);
-                
-                Debug.Log("Parent One: " + Individuals[parentOneIndex].ID + " Fitness: " + Individuals[parentOneIndex].fitness);
-                Debug.Log("Parent Two: " + Individuals[parentTwoIndex].ID + " Fitness: " + Individuals[parentTwoIndex].fitness);
-                */
-                // ******************************* TOURNAMENT SELECTION STRATEGY **************************
-                int parentOneIndex = Tournament(1);
-                int parentTwoIndex = Tournament(2);
-                Debug.Log("Parent One: " + Individuals[parentOneIndex].ID + " Fitness: " + Individuals[parentOneIndex].fitness);
-                Debug.Log("Parent Two: " + Individuals[parentTwoIndex].ID + " Fitness: " + Individuals[parentTwoIndex].fitness);
+                int parentOneIndex;
+                int parentTwoIndex;
+                /* ****************** SELECT TWO FITTEST PARENTS STRATEGY ****************/
+                if(selection == "fittest"){
+                    parentOneIndex = SelectFittestParent();
+                    parentTwoIndex = SelectSecondFittestParent(parentOneIndex);
+                }
+                // ******************************* TOURNAMENT SELECTION STRATEGY **************************//
+                else{
+                    parentOneIndex = Tournament(1);
+                    parentTwoIndex = Tournament(2);
+                }
                 // *************************************************************************************************
                 //Create new individual using genes from fittest parents
+                Individual individual;
                 //**********************************UNIFORM CROSSOVER ****************************************** 
-                //Individual individual = uniformCrossover(parentOneIndex, parentTwoIndex);
+                if(crossover == "uniform")
+                    individual = uniformCrossover(parentOneIndex, parentTwoIndex);
                 //**********************************************************************************************
                 //**********************************ONE POINT CROSSOVER*****************************************
-                Individual individual = onePointCrossover(parentOneIndex, parentTwoIndex);
+                else
+                    individual = onePointCrossover(parentOneIndex, parentTwoIndex);
                 //Find and remove weakest individual from population
                 
                 float lowestFitness = 0;
@@ -137,7 +164,7 @@ public class Algorithm : MonoBehaviour
     private Individual uniformCrossover(int index1, int index2)
     {
         Individual ind = gameObject.AddComponent(typeof(Individual)) as Individual;
-        for(int c = 0; c < 15; c++){
+        for(int c = 0; c < 16; c++){
             //Choose gene from parent depending on rng
             float rand = Random.Range(0f, 1f);
             if(rand > 0.5)
@@ -147,22 +174,22 @@ public class Algorithm : MonoBehaviour
         }
         // 1/10 chance of mutation, causing all genes to change
         float mutate = Random.Range(0f, 1f);
-        if(mutate >= 0.9f)
+        if(mutate >= mutateFactor)
             Mutate(ind);
         return ind;
     }
 
     private Individual onePointCrossover(int index1, int index2){
         Individual ind = gameObject.AddComponent(typeof(Individual)) as Individual;
-        int rand = Random.Range(0, 15);
-        for(int c = 0; c < 15; c++){
+        int rand = Random.Range(0, 16);
+        for(int c = 0; c < 16; c++){
             if(c < rand)
                 ind.chromosomes.Add(Individuals[index1].chromosomes[c]);
             else
                 ind.chromosomes.Add(Individuals[index2].chromosomes[c]);
         }
         float mutate = Random.Range(0f, 1f);
-        if(mutate >= 0.9f)
+        if(mutate >= mutateFactor)
             Mutate(ind);
         return ind;
     }

@@ -144,5 +144,6 @@ public class Enemy : MonoBehaviour
         reloading = false;
         ammo = 30;
         isHealing = false;
+        dead = false;
     }
 }
