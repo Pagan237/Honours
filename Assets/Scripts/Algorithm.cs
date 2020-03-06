@@ -22,11 +22,14 @@ public class Algorithm : MonoBehaviour
     public Text select;
     public Text mutate;
     private string filepath;
+    private string convergence;
     private List<int> record = new List<int>();
     private float averageSurvivalTime;
+    private List<int> printed = new List<int>();
     // Start is called before the first frame update
     void Start()
     {
+        convergence = "converge.csv";
         selection = "tournament";
         crossover = "uniform";
         mutateFactor = 0.9f;
@@ -143,6 +146,22 @@ public class Algorithm : MonoBehaviour
                     string best = Individuals[SelectFittestParent()].fitness.ToString("F2");
                     sw.WriteLine("{0},{1},{2},{3},{4}", g, avg, best, survival, ratio);
                     sw.NewLine = "\n";
+                }
+                using(TextWriter sw = File.AppendText(convergence)){
+                    string genes = null;
+                    for(int i = 0; i < population; i++){
+                        if(!printed.Contains(Individuals[i].ID)){
+                            for(int j = 0; j < 16; j++){
+                                if(j == 0)
+                                    genes = Individuals[i].chromosomes[j].ToString();
+                                else
+                                    genes = genes + ", " + Individuals[i].chromosomes[j].ToString(); 
+                            }
+                            sw.WriteLine("{0}, {1}", Individuals[i].ID.ToString(), genes);
+                            sw.NewLine = "\n";
+                            printed.Add(Individuals[i].ID);
+                        }
+                    }
                 }
                 averageSurvivalTime = 0;
                 for(int i = 0; i < record.Count; i++)
