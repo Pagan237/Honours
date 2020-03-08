@@ -36,7 +36,7 @@ public class Algorithm : MonoBehaviour
         averageSurvivalTime = 0;
         filepath = "results.csv";
         ID = 0;
-        population = 20;
+        population = 10;
         activeIndex = 0;
         Individuals = new List<Individual>();
         generation = 1;
@@ -80,8 +80,8 @@ public class Algorithm : MonoBehaviour
         gen.text = "Generation: " + generation;
         state.text = "State: " + Individuals[activeIndex].state;
         Individuals[activeIndex].active = true;
-        if(Individuals[activeIndex].player.timeAlive >= 0.1f || Individuals[activeIndex].player.dead || Individuals[activeIndex].player.enemy.dead){
-            if(Individuals[activeIndex].player.timeAlive >= 0.1f){
+        if(Individuals[activeIndex].player.timeAlive >= 30 || Individuals[activeIndex].player.dead || Individuals[activeIndex].player.enemy.dead){
+            if(Individuals[activeIndex].player.timeAlive >= 30){
                 record[1]++;
             }
             else if(Individuals[activeIndex].player.dead){
