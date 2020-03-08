@@ -9,6 +9,8 @@ public class Individual : MonoBehaviour
     public bool active;
     public List<int> chromosomes;
     public int state;
+    public bool mutated;
+    public List<int> parentIDs;
     public int ID;
     public int generationEntry;
     private enum states{
@@ -21,6 +23,8 @@ public class Individual : MonoBehaviour
 
     private void Awake()
     {
+        mutated = false;
+        parentIDs = new List<int>();
         fitness = 0;
         active = false;
         player = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>();

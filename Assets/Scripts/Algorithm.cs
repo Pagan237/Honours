@@ -106,6 +106,7 @@ public class Algorithm : MonoBehaviour
                 averageFitness = averageFitness/population;
                 averageSurvivalTime = averageSurvivalTime/population;
                 Debug.Log("Average Fitness: " + averageFitness);
+                Individuals = shuffle(Individuals);
                 int parentOneIndex;
                 int parentTwoIndex;
                 /* ****************** SELECT TWO FITTEST PARENTS STRATEGY ****************/
@@ -147,6 +148,8 @@ public class Algorithm : MonoBehaviour
                     sw.WriteLine("{0},{1},{2},{3},{4}", g, avg, best, survival, ratio);
                     sw.NewLine = "\n";
                 }
+                individual.parentIDs.Add(parentOneIndex);
+                individual.parentIDs.Add(parentTwoIndex);
                 using(TextWriter sw = File.AppendText(convergence)){
                     string genes = null;
                     for(int i = 0; i < population; i++){
@@ -157,7 +160,7 @@ public class Algorithm : MonoBehaviour
                                 else
                                     genes = genes + ", " + Individuals[i].chromosomes[j].ToString(); 
                             }
-                            sw.WriteLine("{0}, {1}", Individuals[i].ID.ToString(), genes);
+                            sw.WriteLine("{0}, {1}, {2}, {3}, {4}", Individuals[i].ID.ToString(), genes);
                             sw.NewLine = "\n";
                             printed.Add(Individuals[i].ID);
                         }
@@ -260,6 +263,18 @@ public class Algorithm : MonoBehaviour
             }
         }
         return index;
+    }
+
+    public List<Individual> shuffle(List<Individual> ind){
+        int count = ind.Count;
+        int last = count - 1;
+        for(int i = 0; i < last; i++){
+            int r = Random.Range(i, count);
+            Individual individual = ind[i];
+            ind[i] = ind[r];
+            ind[r] = individual;
+        }
+        return ind;
     }
 
     void Mutate(Individual i)

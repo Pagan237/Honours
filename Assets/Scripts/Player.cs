@@ -30,6 +30,7 @@ public class Player : MonoBehaviour
     private Vector2 direction;
     private Vector2 spawnPoint;
     public bool dead = false;
+    private bool retreating = false;
 
     // Start is called before the first frame update
     void Start()
@@ -113,9 +114,11 @@ public class Player : MonoBehaviour
         dead = false;
         lastHit = 2;
         randSpot = Random.Range(0, 9);
+        retreating = false;
     }
 
     public void heal(){
+        retreating = false;
         if(health == maxHealth || lastHit < 2 || inSight){
             fitness -= 0.5f;
         }
@@ -137,6 +140,7 @@ public class Player : MonoBehaviour
     
 
     public void reload(){
+        retreating = false;
         gameObject.GetComponent<SpriteRenderer>().material.color = new Color(0, 1, 1, 1);
         if(ammo == 30 || lastHit < 2 || inSight){
             fitness -= 0.5f;
@@ -156,6 +160,7 @@ public class Player : MonoBehaviour
     }
 
     public void Move(){
+        retreating = false;
         gameObject.GetComponent<SpriteRenderer>().material.color = new Color(0, 0, 1, 1);
         if(inSight){
                 transform.position = Vector2.MoveTowards(transform.position, enemyPos.position, speed * Time.deltaTime);
@@ -176,28 +181,34 @@ public class Player : MonoBehaviour
         else if (lastHit < 2)
             fitness += 0.025f;
         else if(health > 2 && ammo > 10 && lastHit > 2)
-            fitness -= 0.1f; 
-        float dist = 0;
-        gameObject.GetComponent<SpriteRenderer>().material.color = new Color(1, 0, 1, 1);
-        int furthestIndex = 0;
-        float furthestDistance = 0;
-        for (int i = 0; i < patrol.moveSpots.Count; i++){
-            if(!inSight)
-                dist = Vector2.Distance(patrol.moveSpots[i].position, transform.position);
-            else
-                dist = Vector2.Distance(patrol.moveSpots[i].position, enemyPos.position);
-            if(dist > furthestDistance){
-                furthestDistance = dist;
-                furthestIndex = i;
+            fitness -= 0.1f;
+        if(!retreating){
+            retreating = true;
+            float dist = 0;
+            gameObject.GetComponent<SpriteRenderer>().material.color = new Color(1, 0, 1, 1);
+            int furthestIndex = 0;
+            float furthestDistance = 0;
+            for (int i = 0; i < patrol.moveSpots.Count; i++){
+                if(!inSight)
+                    dist = Vector2.Distance(patrol.moveSpots[i].position, transform.position);
+                else
+                    dist = Vector2.Distance(patrol.moveSpots[i].position, enemyPos.position);
+                if(dist > furthestDistance){
+                    furthestDistance = dist;
+                    furthestIndex = i;
+                }
             }
+            randSpot = furthestIndex;
         }
-        randSpot = furthestIndex;
         transform.position = Vector2.MoveTowards(transform.position, patrol.moveSpots[randSpot].position, speed * Time.deltaTime);
     }
     public void Shoot(){
+        retreating = false;
         gameObject.GetComponent<SpriteRenderer>().material.color = new Color(0, 0, 0, 1);
-        if (timeSinceLastShot > 0 || isReloading || isHealing || ammo <= 0 )
-        {
+        if (timeSinceLastShot > 0 || isReloading || isHealing)
+            return;
+        else if(ammo <= 0){
+            fitness -= 0.25f;
             return;
         }
         if(inSight){

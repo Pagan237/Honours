@@ -139,6 +139,7 @@ public class Enemy : MonoBehaviour
         foreach(GameObject p in projectiles){
             Destroy(p);
         }
+        randSpot = Random.Range(0, 9);
         transform.position = spawnPoint;
         health = 3;
         reloading = false;
