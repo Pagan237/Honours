@@ -36,7 +36,7 @@ public class Algorithm : MonoBehaviour
         averageSurvivalTime = 0;
         filepath = "results.csv";
         ID = 0;
-        population = 10;
+        population = 20;
         activeIndex = 0;
         Individuals = new List<Individual>();
         generation = 1;
@@ -80,8 +80,8 @@ public class Algorithm : MonoBehaviour
         gen.text = "Generation: " + generation;
         state.text = "State: " + Individuals[activeIndex].state;
         Individuals[activeIndex].active = true;
-        if(Individuals[activeIndex].player.timeAlive >= 30 || Individuals[activeIndex].player.dead || Individuals[activeIndex].player.enemy.dead){
-            if(Individuals[activeIndex].player.timeAlive >= 30){
+        if(Individuals[activeIndex].player.timeAlive >= 0.1f || Individuals[activeIndex].player.dead || Individuals[activeIndex].player.enemy.dead){
+            if(Individuals[activeIndex].player.timeAlive >= 0.1f){
                 record[1]++;
             }
             else if(Individuals[activeIndex].player.dead){
@@ -148,19 +148,21 @@ public class Algorithm : MonoBehaviour
                     sw.WriteLine("{0},{1},{2},{3},{4}", g, avg, best, survival, ratio);
                     sw.NewLine = "\n";
                 }
-                individual.parentIDs.Add(parentOneIndex);
-                individual.parentIDs.Add(parentTwoIndex);
+                individual.parentIDs[0] = Individuals[parentOneIndex].ID;
+                individual.parentIDs[1] = Individuals[parentTwoIndex].ID;
                 using(TextWriter sw = File.AppendText(convergence)){
                     string genes = null;
+                    string IDS;
                     for(int i = 0; i < population; i++){
                         if(!printed.Contains(Individuals[i].ID)){
+                            IDS = Individuals[i].parentIDs[0] + " - " + Individuals[i].parentIDs[1];
                             for(int j = 0; j < 16; j++){
                                 if(j == 0)
                                     genes = Individuals[i].chromosomes[j].ToString();
                                 else
                                     genes = genes + ", " + Individuals[i].chromosomes[j].ToString(); 
                             }
-                            sw.WriteLine("{0}, {1}, {2}, {3}, {4}", Individuals[i].ID.ToString(), genes);
+                            sw.WriteLine("{0}, {1}, {2}, {3}", Individuals[i].ID.ToString(), genes, IDS, Individuals[i].mutated);
                             sw.NewLine = "\n";
                             printed.Add(Individuals[i].ID);
                         }
@@ -282,6 +284,6 @@ public class Algorithm : MonoBehaviour
         for(int c = 0; c < i.chromosomes.Count; c++){
             i.chromosomes[c] = Random.Range(1, 6);
         }
-        Debug.Log("Mutated");
+        i.mutated = true;
     }
 }

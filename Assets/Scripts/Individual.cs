@@ -25,6 +25,8 @@ public class Individual : MonoBehaviour
     {
         mutated = false;
         parentIDs = new List<int>();
+        parentIDs.Add(-1);
+        parentIDs.Add(-1);
         fitness = 0;
         active = false;
         player = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>();
