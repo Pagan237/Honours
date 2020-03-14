@@ -162,15 +162,20 @@ public class Player : MonoBehaviour
     public void Move(){
         retreating = false;
         gameObject.GetComponent<SpriteRenderer>().material.color = new Color(0, 0, 1, 1);
+        if(ammo < 1){
+            fitness -= 0.1f;
+        }
+        else if (ammo > 0 && health >= 2 && !inSight){
+            fitness += 0.1f; 
+        }
+        else if (ammo > 0 && !inSight){
+            fitness += 0.05f;
+        }
         if(inSight){
                 transform.position = Vector2.MoveTowards(transform.position, enemyPos.position, speed * Time.deltaTime);
         }
         else
             transform.position = Vector2.MoveTowards(transform.position, patrol.moveSpots[randSpot].position, speed * Time.deltaTime);
-        if(ammo > 10 && health > 2 && !inSight)
-            fitness += 0.1f;
-        else if ((ammo > 10 || health > 2) && !inSight)
-            fitness += 0.05f;
     }
 
     public void Retreat(){
