@@ -251,7 +251,7 @@ public class Algorithm : MonoBehaviour
     private int SelectSecondFittestParent(int index)
     {
         int secondBestIndex = 0;
-        float secondHighestFitness = 0;
+        float secondHighestFitness = System.Int32.MinValue;
         for(int i = 0; i < population; i++)
         {
             if(Individuals[i].fitness <= Individuals[index].fitness && Individuals[i].fitness > secondHighestFitness && i != index){
@@ -263,7 +263,7 @@ public class Algorithm : MonoBehaviour
     }
 
     int Tournament(int parent){
-        float parentFitness = 0;
+        float parentFitness = System.Int32.MinValue;
         int index = 0;
         for(int i = 0; i < population/2; i++){
             if(parent == 1){

@@ -120,7 +120,7 @@ public class Player : MonoBehaviour
     public void heal(){
         retreating = false;
         if(health == maxHealth || lastHit < 2 || inSight){
-            fitness -= 50f;
+            fitness -= 5f;
         }
         gameObject.GetComponent<SpriteRenderer>().material.color = new Color(0, 1, 0, 1);
         if(!isHealing && !isReloading){
@@ -141,7 +141,7 @@ public class Player : MonoBehaviour
         retreating = false;
         gameObject.GetComponent<SpriteRenderer>().material.color = new Color(0, 1, 1, 1);
         if(ammo == 30 || lastHit < 2 || inSight){
-            fitness -= 50f;
+            fitness -= 5f;
         }
         if(!isReloading && !isHealing)
         {
@@ -159,7 +159,7 @@ public class Player : MonoBehaviour
         retreating = false;
         gameObject.GetComponent<SpriteRenderer>().material.color = new Color(0, 0, 1, 1);
         if(inSight){
-                fitness -= 0.1f;
+                fitness -= 0.5f;
                 transform.position = Vector2.MoveTowards(transform.position, enemyPos.position, speed * Time.deltaTime);
         }
         else{
@@ -168,6 +168,8 @@ public class Player : MonoBehaviour
                 fitness += 0.1f;
             else if(ammo > 10)
                 fitness += 0.05f;
+            else if (ammo <= 10)
+                fitness -= 0.1f;
         }
         if(lastHit < 2){
             fitness -= 0.1f;
