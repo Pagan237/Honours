@@ -26,9 +26,13 @@ public class Algorithm : MonoBehaviour
     private List<int> record = new List<int>();
     private float averageSurvivalTime;
     private List<int> printed = new List<int>();
+    private int childCount;
+
+    private List<float> rng = new List<float>();
     // Start is called before the first frame update
     void Start()
     {
+        childCount = 3;
         convergence = "converge.csv";
         selection = "tournament";
         crossover = "uniform";
@@ -80,7 +84,7 @@ public class Algorithm : MonoBehaviour
         gen.text = "Generation: " + generation;
         state.text = "State: " + Individuals[activeIndex].state;
         Individuals[activeIndex].active = true;
-        if(Individuals[activeIndex].player.timeAlive >= 30 || Individuals[activeIndex].player.dead || Individuals[activeIndex].player.enemy.dead){
+        if(Individuals[activeIndex].player.timeAlive >= 30|| Individuals[activeIndex].player.dead || Individuals[activeIndex].player.enemy.dead){
             if(Individuals[activeIndex].player.timeAlive >= 30){
                 record[1]++;
             }
@@ -106,39 +110,6 @@ public class Algorithm : MonoBehaviour
                 averageFitness = averageFitness/population;
                 averageSurvivalTime = averageSurvivalTime/population;
                 Debug.Log("Average Fitness: " + averageFitness);
-                Individuals = shuffle(Individuals);
-                int parentOneIndex;
-                int parentTwoIndex;
-                /* ****************** SELECT TWO FITTEST PARENTS STRATEGY ****************/
-                if(selection == "fittest"){
-                    parentOneIndex = SelectFittestParent();
-                    parentTwoIndex = SelectSecondFittestParent(parentOneIndex);
-                }
-                // ******************************* TOURNAMENT SELECTION STRATEGY **************************//
-                else{
-                    parentOneIndex = Tournament(1);
-                    parentTwoIndex = Tournament(2);
-                }
-                // *************************************************************************************************
-                //Create new individual using genes from fittest parents
-                Individual individual;
-                //**********************************UNIFORM CROSSOVER ****************************************** 
-                if(crossover == "uniform")
-                    individual = uniformCrossover(parentOneIndex, parentTwoIndex);
-                //**********************************************************************************************
-                //**********************************ONE POINT CROSSOVER*****************************************
-                else
-                    individual = onePointCrossover(parentOneIndex, parentTwoIndex);
-                //Find and remove weakest individual from population
-                
-                float lowestFitness = 0;
-                int lowestFitnessIndex = 0;
-                for(int i = 0; i < Individuals.Count; i++){
-                    if(Individuals[i].fitness <= lowestFitness){
-                        lowestFitnessIndex = i;
-                        lowestFitness = Individuals[i].fitness;
-                    }
-                }
                 using(TextWriter sw = File.AppendText(filepath)){
                     string ratio = record[0].ToString() + " - " + record[1].ToString() + " - " + record[2].ToString();
                     string survival = averageSurvivalTime.ToString("F2");
@@ -148,8 +119,6 @@ public class Algorithm : MonoBehaviour
                     sw.WriteLine("{0},{1},{2},{3},{4}", g, avg, best, survival, ratio);
                     sw.NewLine = "\n";
                 }
-                individual.parentIDs[0] = Individuals[parentOneIndex].ID;
-                individual.parentIDs[1] = Individuals[parentTwoIndex].ID;
                 using(TextWriter sw = File.AppendText(convergence)){
                     string genes = null;
                     string IDS;
@@ -168,16 +137,62 @@ public class Algorithm : MonoBehaviour
                         }
                     }
                 }
+                Individuals = shuffle(Individuals);
+                int parentOneIndex;
+                int parentTwoIndex;
+                /* ****************** SELECT TWO FITTEST PARENTS STRATEGY ****************/
+                if(selection == "fittest"){
+                    parentOneIndex = SelectFittestParent();
+                    parentTwoIndex = SelectSecondFittestParent(parentOneIndex);
+                }
+                // ******************************* TOURNAMENT SELECTION STRATEGY **************************//
+                else{
+                    parentOneIndex = Tournament(1);
+                    parentTwoIndex = Tournament(2);
+                }
+                // *************************************************************************************************
+                //Create new individual using genes from fittest parents
+                List<Individual> children = new List<Individual>();
+                for(int i = 0; i < childCount; i++){
+                    for(int c = 0; c < 16; c++){
+                        float rand = Random.Range(0.0f, 1.0f);
+                        rng.Add(rand);
+                    }
+                    Individual individual;
+                    //**********************************UNIFORM CROSSOVER ****************************************** 
+                    if(crossover == "uniform"){
+                        individual = uniformCrossover(parentOneIndex, parentTwoIndex);
+                    }
+                    //**********************************************************************************************
+                    //**********************************ONE POINT CROSSOVER*****************************************
+                    else
+                        individual = onePointCrossover(parentOneIndex, parentTwoIndex);
+                    individual.parentIDs[0] = Individuals[parentOneIndex].ID;
+                    individual.parentIDs[1] = Individuals[parentTwoIndex].ID;
+                    individual.ID = ID;
+                    ID++;
+                    individual.generationEntry = generation + 1;
+                    children.Add(individual);
+                }
+                for(int i = 0; i < childCount; i++){
+                    float lowestFitness = 0;
+                    int lowestFitnessIndex = 0;
+                    for(int j = 0; j < Individuals.Count; j++){
+                        if(Individuals[j].fitness <= lowestFitness){
+                            lowestFitnessIndex = j;
+                            lowestFitness = Individuals[j].fitness;
+                        }
+                    }
+                    Destroy(Individuals[lowestFitnessIndex]);
+                    Individuals.RemoveAt(lowestFitnessIndex);
+                }
+                for(int i = 0; i < childCount; i++){
+                    Individuals.Add(children[i]);
+                }
+                //Find and remove weakest individual from population
                 averageSurvivalTime = 0;
                 for(int i = 0; i < record.Count; i++)
                     record[i] = 0;
-                Destroy(Individuals[lowestFitnessIndex]);
-                Individuals.RemoveAt(lowestFitnessIndex);
-                //Add new individual to population and move to next generation
-                individual.ID = ID;
-                ID++;
-                individual.generationEntry = generation + 1;
-                Individuals.Add(individual);
                 activeIndex = 0;
                 generation++; 
             }
@@ -189,7 +204,8 @@ public class Algorithm : MonoBehaviour
         Individual ind = gameObject.AddComponent(typeof(Individual)) as Individual;
         for(int c = 0; c < 16; c++){
             //Choose gene from parent depending on rng
-            float rand = Random.Range(0f, 1f);
+            float rand = rng[0];
+            rng.RemoveAt(0);
             if(rand > 0.5)
                 ind.chromosomes.Add(Individuals[index1].chromosomes[c]);
             else

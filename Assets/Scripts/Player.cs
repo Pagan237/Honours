@@ -69,7 +69,7 @@ public class Player : MonoBehaviour
             isReloading = false;
         if(Vector2.Distance(transform.position, patrol.moveSpots[randSpot].position) < 0.2f)
             randSpot = Random.Range(0, 9);
-        float dirAngle = Mathf.Atan2(direction.x, direction.y) *Mathf.Rad2Deg;
+        float dirAngle = Mathf.Atan2(direction.y, direction.x) *Mathf.Rad2Deg;
         transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.AngleAxis(dirAngle, Vector3.forward),10000*Time.deltaTime);
         direction = patrol.moveSpots[randSpot].position - transform.position;
         enemyDirection = enemyPos.position - transform.position;
@@ -120,15 +120,13 @@ public class Player : MonoBehaviour
     public void heal(){
         retreating = false;
         if(health == maxHealth || lastHit < 2 || inSight){
-            fitness -= 0.5f;
+            fitness -= 50f;
         }
         gameObject.GetComponent<SpriteRenderer>().material.color = new Color(0, 1, 0, 1);
         if(!isHealing && !isReloading){
             if(!inSight){
                 if(health < 2 && lastHit > 2)
-                    fitness += 5;
-                else if(health == 2 && lastHit > 2)
-                    fitness += 3;
+                    fitness += 50;
             }
             health++;
             timeSpentHealing = 2f;
@@ -143,15 +141,13 @@ public class Player : MonoBehaviour
         retreating = false;
         gameObject.GetComponent<SpriteRenderer>().material.color = new Color(0, 1, 1, 1);
         if(ammo == 30 || lastHit < 2 || inSight){
-            fitness -= 0.5f;
+            fitness -= 50f;
         }
         if(!isReloading && !isHealing)
         {
             if(!inSight){
                 if(ammo < 10 && lastHit > 2)
-                    fitness += 5;
-                else if(ammo> 10 && ammo < 30 && lastHit > 2)
-                    fitness += 2;
+                    fitness += 50;
             }
             ammo = 30;
             isReloading = true;
@@ -162,31 +158,29 @@ public class Player : MonoBehaviour
     public void Move(){
         retreating = false;
         gameObject.GetComponent<SpriteRenderer>().material.color = new Color(0, 0, 1, 1);
-        if(ammo < 1){
-            fitness -= 0.1f;
-        }
-        else if (ammo > 0 && health >= 2 && !inSight){
-            fitness += 0.1f; 
-        }
-        else if (ammo > 0 && !inSight){
-            fitness += 0.05f;
-        }
         if(inSight){
+                fitness -= 0.1f;
                 transform.position = Vector2.MoveTowards(transform.position, enemyPos.position, speed * Time.deltaTime);
         }
-        else
+        else{
             transform.position = Vector2.MoveTowards(transform.position, patrol.moveSpots[randSpot].position, speed * Time.deltaTime);
+            if(ammo > 10 && health >= 2 && lastHit > 2)
+                fitness += 0.1f;
+            else if(ammo > 10)
+                fitness += 0.05f;
+        }
+        if(lastHit < 2){
+            fitness -= 0.1f;
+        }
     }
 
     public void Retreat(){
-        if(lastHit < 2 && health < 2 && ammo < 10)
+        if(lastHit < 2){
             fitness += 0.1f;
-        else if(lastHit < 2 && (health <= 2 || ammo < 10))
-            fitness += 0.05f;
-        else if (lastHit < 2)
-            fitness += 0.025f;
-        else if(health > 2 && ammo > 10 && lastHit > 2)
+        }
+        else{
             fitness -= 0.1f;
+        }
         if(!retreating){
             retreating = true;
             float dist = 0;
@@ -210,23 +204,21 @@ public class Player : MonoBehaviour
     public void Shoot(){
         retreating = false;
         gameObject.GetComponent<SpriteRenderer>().material.color = new Color(0, 0, 0, 1);
-        if (timeSinceLastShot > 0 || isReloading || isHealing)
+        if (timeSinceLastShot > 0 || isReloading || isHealing || ammo == 0)
             return;
-        else if(ammo <= 0){
-            fitness -= 0.25f;
-            return;
-        }
-        if(inSight){
-            shooting.shot.target = enemyPos.position;
-            if (ammo > 0){
+        else if(inSight){
+                shooting.shot.target = enemyPos.position;
+            if(ammo > 10){
                 fitness += 5;
             }
-            else
-                fitness -= 5;
+            else if(ammo > 0){
+                fitness += 1;
+            }
         }
         else{
-            shooting.shot.target = patrol.moveSpots[randSpot].position;
-            fitness -= 5;
+            if(ammo > 0)
+                shooting.shot.target = patrol.moveSpots[randSpot].position;
+            fitness -= 20;
         }    
         Instantiate(shooting.shot, shooting.playerPos.position, Quaternion.identity);
         timeSinceLastShot = shooting.fireRate;
